@@ -1,0 +1,26 @@
+.User {
+    font-size: 20px;
+    padding: 0px 4px;
+    font-weight: bold;
+    border-radius: 8px;
+    margin-top: 5px;
+
+    background-color: rgba(150,150,150, 0.8);
+    background-image: linear-gradient(to right,  rgba(150,150,150, 0.8), white);
+}
+
+.Painter {
+    background-color: rgba(200, 200, 0, 0.8);
+    background-image: linear-gradient(to right,  rgba(200, 200, 0, 0.8), white);
+}
+
+.Accepted {
+    background-color: rgba(0, 200,0, 0.8);
+    background-image: linear-gradient(to right,  rgba(0, 200,0, 0.8), white);
+}
+
+.Disabled {
+    background-color: rgb(200,200,200, 0.8);
+    background-image: linear-gradient(to right,  rgb(200,200,200), white);
+    color: rgba(100,100,100, 0.4);
+}

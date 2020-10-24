@@ -1,0 +1,11 @@
+.ScoreBoard {
+    width: 15%;
+    height: auto;
+    min-height: 300px;
+    min-width: 150px;
+    border: 1px black solid;
+    margin: 10px;
+    text-align: left;
+    padding: 0px 5px;
+    background-color: #ddd;
+}

@@ -1,0 +1,21 @@
+.Button {
+    color        : white;
+    border-radius: 4px;
+    text-shadow  : 0 1px 1px rgba(0, 0, 0, 0.2);
+}
+
+.Success {
+    background: rgb(28, 184, 65);
+}
+
+.Error {
+    background: rgb(202, 60, 60);
+}
+
+.Warning {
+    background: rgb(223, 117, 20);
+}
+
+.Secondary {
+    background: rgb(66, 184, 221);
+}
