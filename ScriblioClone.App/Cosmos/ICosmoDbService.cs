@@ -1,4 +1,6 @@
 ﻿using ScriblioClone.App.Models;
+using ScriblioClone.App.Requests;
+using ScriblioClone.App.Responses;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,6 +10,7 @@ namespace ScriblioClone.App.Cosmos
 {
     public interface ICosmosDbService
     {
-        Task CraeteGameAsync(GameModel game);
+        Task CraeteGameAsync(GameState game);
+        Task<GameState> GetGameByOwnerIdAsync(string ownerId);
     }
 }

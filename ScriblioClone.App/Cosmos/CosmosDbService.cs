@@ -1,5 +1,7 @@
 ﻿using Microsoft.Azure.Cosmos;
 using ScriblioClone.App.Models;
+using ScriblioClone.App.Requests;
+using ScriblioClone.App.Responses;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,12 +20,14 @@ namespace ScriblioClone.App.Cosmos
             this._container = dbClient.GetContainer(databaseName, containerName);
         }
 
-        public async Task CraeteGameAsync(GameModel game)
+        public async Task CraeteGameAsync(GameState game)
         {
-            await this._container.CreateItemAsync<GameModel>(game, new PartitionKey(game.Id));
+            await _container.CreateItemAsync(game);
         }
 
-
-
+        public async Task<GameState> GetGameByOwnerIdAsync(string ownerId)
+        {
+            return await _container.ReadItemAsync<GameState>(ownerId, new PartitionKey("/id"));
+        }
     }
 }
