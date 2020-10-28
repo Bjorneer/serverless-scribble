@@ -1,7 +1,6 @@
 import React from 'react';
 import User from './User';
 import classes from './css/ScoreBoard.module.css';
-import Button from './ui/Button';
 
 const ScoreBoard = props => {
     props.users.sort((a, b) => {

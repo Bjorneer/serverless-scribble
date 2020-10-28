@@ -1,22 +1,59 @@
 import React, { useState } from 'react';
 import Button from '../components/ui/Button';
 import Input from '../components/ui/Input';
+import FormValidator from '../Helpers/FormValidator';
 
 
 const JoinGame = props => {
+    const [formIsValid, setFormIsValid] = useState(false);
     const [joinGameForm, setJoinGameForm] = useState({
         username: {
-            placeholder: 'USERNAME',
+            elementType: 'input',
+            elementConfig: {
+                type: 'text',
+                placeholder: 'Your Name'
+            },
+            value: '',
+            validation: {
+                required: true
+            },
             isValid: false,
-            type: 'text',
+            touched: false
         },
-        gameid: {
-            placeholder: 'GAME CODE',
+        gameCode: {
+            elementType: 'input',
+            elementConfig: {
+                type: 'text',
+                placeholder: 'Your Name'
+            },
+            value: '',
+            validation: {
+                required: true
+            },
             isValid: false,
-            type: 'text'
+            touched: false
         },
-        isFormValid: false
     });
+
+    const onInputChangedHandler = (event, inputIdentifier) => {
+        const updatedForm = {
+            ...joinGameForm
+        };
+        const updatedFormElement = {
+            ...updatedForm[inputIdentifier]
+        };
+        updatedFormElement.value = event.target.value;
+        updatedFormElement.valid = FormValidator.validate(updatedFormElement.value, updatedFormElement.validation);
+        updatedFormElement.touched = true;
+        updatedForm[inputIdentifier] = updatedFormElement;
+
+        let formValid = true;
+        for (let inputIdentifiers in form){
+            formValid = formValid && form[inputIdentifiers].valid
+        }
+        setJoinGameForm(form);
+        setFormIsValid(formValid);
+    };
 
     const form = [];
     for (let element in joinGameForm) {
@@ -28,7 +65,7 @@ const JoinGame = props => {
             <h1>Join Game</h1>
             <form onSubmit={props.onSubmit}>
                 {form}
-                <Button type='Success'>Join Game</Button>
+                <Button type='Success' disabled={!formIsValid}>Join Game</Button>
             </form>
         </>
     );

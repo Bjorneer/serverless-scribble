@@ -5,6 +5,7 @@ import JoinGame from './JoinGame';
 import Button from '../components/ui/Button';
 import classes from './css/MainMenu.module.css';
 import TitleLogo from '../components/ui/TitleLogo';
+import { GameAPI } from '../Helpers/Api';
 
 const MainMenu = props => {
     const [isCreatingGame, setIsCreatingGame] = useState(false);
@@ -12,11 +13,12 @@ const MainMenu = props => {
     const history = useHistory();
 
     const onCreateNewGame = () => {
-        setLobbyCode("A1B2C3")
+        setLobbyCode("A1B2C3");
         setIsCreatingGame(true);
     };
 
-    const onGameJoinHandler = () => {
+    const onGameJoinHandler = (gameCode) => {
+        GameAPI.join({ gameCode: gameCode});
         history.push('/game');
     };
 
@@ -26,7 +28,7 @@ const MainMenu = props => {
 
     let form = <JoinGame onSubmit={onGameJoinHandler} />;
     if (isCreatingGame) {
-        form = <CreateGame onSubmit={onGameJoinHandler} />
+        form = <CreateGame onSubmit={onGameCreateHandler} />
     }
 
     return (
