@@ -1,0 +1,14 @@
+.MainMenu {
+    width           : 800px;
+    height          : 800px;
+    background-color: red;
+    background-image: linear-gradient(to bottom right, orange, yellow);
+    border          : 2px solid #999;
+    margin          : auto;
+    text-align      : center;
+    box-shadow      : 10px 10px 10px;
+}
+
+.MainMenu>h1 {
+    font-size: 50px;
+}

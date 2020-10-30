@@ -1,0 +1,10 @@
+.InputText {
+    padding:5px; 
+    border:2px solid #ccc; 
+    -webkit-border-radius: 5px;
+    border-radius: 5px;
+}
+
+.InputText:focus {
+    border-color:#333;
+}
