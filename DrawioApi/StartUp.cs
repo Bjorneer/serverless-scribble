@@ -27,7 +27,7 @@ namespace DrawioFunctions
 
                 return cosmosClientBuilder.WithConnectionModeDirect()
                     .WithApplicationRegion("North Europe")
-                    .WithBulkExecution(true)
+                    //.WithBulkExecution(true)
                     .Build();
             });
         }

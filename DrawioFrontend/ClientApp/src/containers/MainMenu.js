@@ -13,12 +13,20 @@ const MainMenu = props => {
     const history = useHistory();
 
     const onCreateNewGame = () => {
-        setLobbyCode("A1B2C3");
-        setIsCreatingGame(true);
+        GameAPI.create({username: 'myname'})
+            .then(response => response.json())
+            .then(data => {
+                console.log(data);
+                setIsCreatingGame(true);
+                setLobbyCode(data.gamecode);
+            })
+            .catch((error) => {
+                console.error('Error: ' + error);
+            });
     };
 
     const onGameJoinHandler = (gameCode) => {
-        GameAPI.join({ gameCode: gameCode});
+        GameAPI.join({ gameCode: gameCode });
         history.push('/game');
     };
 

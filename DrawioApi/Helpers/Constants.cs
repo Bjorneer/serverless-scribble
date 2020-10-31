@@ -6,7 +6,7 @@ namespace DrawioFunctions.Helpers
 {
     public static class Constants
     {
-        public static readonly string COSMOS_DB_CONNECTIONSTRING = "AccountEndpoint = https://projects-db.documents.azure.com:443/;AccountKey=NIrj9qlMmhBzFr1oJ2yMUrjSJf0rApPZ9yVaKhcIxqzMsRSqn0LUS4yw2S59INsV2XOAi1qkZ64Ef5fTpE68cg==;";
+        public static readonly string COSMOS_DB_CONNECTIONSTRING = "AccountEndpoint = https://localhost:8081/;AccountKey=C2y6yDjf5/R+ob0N8A7Cgv30VRDJIWEHLM+4QDU5DE2nQ9nDuVTqobD4b8mGGyPMbIZnqyMsEcaGQy67XIw/Jw==";
         public static readonly string COSMOS_DB_DATABASE = "DrawIO";
         public static readonly string COSMOS_DB_CONTAINER = "Game";
     }

@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30517.126
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DrawioFunctions", "DrawioApi\DrawioFunctions.csproj", "{0631A8B0-BF36-4F85-B7E3-F8BAD95E9937}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DrawioFunctions", "DrawioApi\DrawioFunctions.csproj", "{0631A8B0-BF36-4F85-B7E3-F8BAD95E9937}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DrawioClient", "DrawioFrontend\DrawioClient.csproj", "{784E2B44-3A4C-48B1-95B8-5F3FDCB0B0F5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DrawioClient", "DrawioFrontend\DrawioClient.csproj", "{784E2B44-3A4C-48B1-95B8-5F3FDCB0B0F5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
