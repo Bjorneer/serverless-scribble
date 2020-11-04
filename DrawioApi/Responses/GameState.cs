@@ -15,8 +15,10 @@ namespace DrawioFunctions.Responses
         public string GameCode { get; set; }
 
         [JsonProperty(PropertyName = "players")]
-        public List<Player> Players { get; set; }
+        public List<SlimPlayer> Players { get; set; }
 
+        [JsonProperty(PropertyName = "playerId")]
+        public string PlayerID { get; set; }
     }
 
     public class SlimPlayer

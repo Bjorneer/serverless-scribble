@@ -1,15 +1,15 @@
-using DrawioFunctions.Helpers;
 using DrawioFunctions.Models;
 using DrawioFunctions.Requests;
 using DrawioFunctions.Responses;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Azure.Cosmos;
 using Microsoft.Azure.WebJobs;
+using Microsoft.Azure.WebJobs.Extensions.DurableTask;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 
@@ -17,24 +17,13 @@ namespace DrawioApi
 {
     public class CreateGame
     {
-        private readonly CosmosClient _cosmosClient;
-
-        private Database _database;
-        private Container _container;
         private Random _random = new Random();
-
-        public CreateGame(CosmosClient cosmosClient)
-        {
-            _cosmosClient = cosmosClient;
-
-            _database = _cosmosClient.GetDatabase(Constants.COSMOS_DB_DATABASE);
-            _container = _database.GetContainer(Constants.COSMOS_DB_CONTAINER);
-        }
 
         [FunctionName(nameof(CreateGame))]
         public async Task<IActionResult> Run(
             [HttpTrigger(AuthorizationLevel.Function, "post", Route = null)] HttpRequest req,
-            ILogger log)
+            ILogger log,
+            [DurableClient] IDurableEntityClient client)
         {
             string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
             var data = JsonConvert.DeserializeObject<CreateGameRequest>(requestBody);
@@ -47,35 +36,36 @@ namespace DrawioApi
             var player = new Player
             {
                 UserName = data.UserName,
-                PlayerID = Guid.NewGuid().ToString(),
-                Score = 0
+                ID = Guid.NewGuid().ToString(),
+                Score = 0,
+                LastRequestAt = DateTime.Now
             };
             var gamecode = CreateGameCode();
             var newGame = new Game
             {
-                ID = Guid.NewGuid().ToString(),
-                Players = new System.Collections.Generic.List<Player>(new Player[]{ player }),
                 GameCode = gamecode,
-                OwnerID = player.PlayerID,
-                Key = gamecode
+                OwnerID = player.ID,
+                RoundsLeft = 10,
+                SecondsPerRound = 90
             };
-            ItemResponse<Game> item = null;
             try
             {
-                item = await _container.CreateItemAsync<Game>(newGame);
+                var entityId = new EntityId("GameEntity", gamecode);
+                await client.SignalEntityAsync(entityId, "Create", newGame);
+                await client.SignalEntityAsync(entityId, "AddPlayer", player);
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 log.LogError("EXCEPTION: " + e.Message);
-                return new BadRequestObjectResult("Something went wrong with the Database connection.");
+                return new BadRequestObjectResult($"Failed to create game with code {gamecode} and playerid {player.ID}.");
             }
             var response = new GameState
             {
                 GameCode = gamecode,
-                Players = item.Resource.Players,
-                Started = false
+                Players = new List<SlimPlayer> { new SlimPlayer { UserName = player.UserName } },
+                Started = false,
+                PlayerID = player.ID
             };
-
             return new OkObjectResult(response);
         }
 
