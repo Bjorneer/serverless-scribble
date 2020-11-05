@@ -12,6 +12,7 @@ namespace DrawioFunctions.Entities
     {
         public Game Game { get; set; }
         public List<Player> Players { get; set; } = new List<Player>();
+        public DateTime CreatedAt { get; set; }
 
         public void AddPlayer(Player player)
         {
