@@ -1,51 +1,77 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useHistory } from "react-router-dom";
-import CreateGame from './CreateGame';
-import JoinGame from './JoinGame';
-import Button from '../components/ui/Button';
+import MainForm from './MainForm';
+import Lobby from '../components/Lobby';
 import classes from './css/MainMenu.module.css';
 import TitleLogo from '../components/ui/TitleLogo';
 import { GameAPI } from '../Helpers/Api';
 
 const MainMenu = props => {
-    const [isCreatingGame, setIsCreatingGame] = useState(false);
+    const [isInLobby, setIsInLobby] = useState(false);
     const [lobbyCode, setLobbyCode] = useState(null);
+    const [gameState, setGameState] = useState(null);
+    const [isLobbyLeader, setIsLobbyLeader] = useState(false);
     const history = useHistory();
 
-    const onCreateNewGame = () => {
-        GameAPI.create({username: 'myname'})
+    useEffect(() => {
+        setInterval(async () => {
+            if(isInLobby && gameState){
+                GameAPI.getGameState({gamecode: lobbyCode, token: gameState.playerId})
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log(data);
+                        setGameState(data);
+                    })
+                    .catch(err => console.log(err));
+            }
+        }, 5000);
+    });
+
+    const onJoinGameHandler = (e, gameCode, username) => {
+        e.preventDefault();
+        GameAPI.join({ gamecode: gameCode, username: username })
             .then(response => response.json())
             .then(data => {
                 console.log(data);
-                setIsCreatingGame(true);
+                setGameState(data);
+                setIsInLobby(true);
                 setLobbyCode(data.gamecode);
             })
-            .catch((error) => {
-                console.error('Error: ' + error);
+            .catch(err => {
+                console.log(err);
             });
     };
 
-    const onGameJoinHandler = (gameCode) => {
-        GameAPI.join({ gameCode: gameCode });
+    const onCreateNewGameHandler = (e, username) => {
+        e.preventDefault();
+        console.log(username);
+        GameAPI.create({username: username})
+            .then(response => response.json())
+            .then(data => {
+                console.log(data);
+                setIsInLobby(true);
+                setLobbyCode(data.gamecode);
+                setGameState(data);
+                setIsLobbyLeader(true);
+            })
+            .catch((err) => {
+                console.error(err);
+            });
+    };
+
+    const onGameStartHandler = () => {
         history.push('/game');
     };
 
-    const onGameCreateHandler = () => {
-        history.push('/game');
-    };
-
-    let form = <JoinGame onSubmit={onGameJoinHandler} />;
-    if (isCreatingGame) {
-        form = <CreateGame onSubmit={onGameCreateHandler} />
+    let form = null;
+    if(!isInLobby){
+        form = <MainForm onJoinGame={onJoinGameHandler} onCreateGame={onCreateNewGameHandler} />;
     }
-
     return (
         <div className={classes.MainMenu}>
             <TitleLogo />
-            {form}
-            {!isCreatingGame ?
-                <Button type='Secondary' onClick={onCreateNewGame}><h2>CREATE A NEW GAME</h2></ Button > :
-            <h3 style={{fontWeight:'bold'}}>GAME CODE: {lobbyCode}</h3>}
+            {form}  
+            {isInLobby ? <Lobby isOwner={isLobbyLeader} players={gameState ? gameState.players : null} startGame={onGameStartHandler} lobbyCode={lobbyCode}/> : null}
         </div>
     );
 };

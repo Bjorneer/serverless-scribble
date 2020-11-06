@@ -4,13 +4,14 @@ const defaultUrl = 'http://localhost:7071/api'
 export const APIUrls = {
     create: '/CreateGame',
     join: '/JoinGame',
-    getUpdates: '/GetGameState',
+    getGameState: '/GetGameState',
 
 };
 
 const postRequest = (url, data) => {
     return fetch(defaultUrl + url, {
         method: 'POST',
+        mode: 'cors',
         headers: {
             'Content-Type': 'application/json'
         },
@@ -29,7 +30,7 @@ export const GameAPI = {
     join: (data) => {
         return postRequest(APIUrls.join, data);
     },
-    getUpdates: () => {
-        return getRequest(APIUrls.getUpdates + '?token=' + localStorage['token']);
+    getGameState: (data) => {
+        return getRequest(APIUrls.getGameState + '?token=' + data.token + '&gamecode=' + data.gamecode);
     },
 };

@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import Button from '../components/ui/Button';
 import Input from '../components/ui/Input';
-import FormValidator from '../Helpers/FormValidator';
+import validate from '../Helpers/FormValidator';
 
 
-const JoinGame = props => {
+const MainForm = props => {
     const [formIsValid, setFormIsValid] = useState(false);
-    const [joinGameForm, setJoinGameForm] = useState({
+    const [mainForm, setMainForm] = useState({
         username: {
             elementType: 'input',
             elementConfig: {
@@ -24,7 +24,7 @@ const JoinGame = props => {
             elementType: 'input',
             elementConfig: {
                 type: 'text',
-                placeholder: 'Your Name'
+                placeholder: 'Game Code'
             },
             value: '',
             validation: {
@@ -37,13 +37,15 @@ const JoinGame = props => {
 
     const onInputChangedHandler = (event, inputIdentifier) => {
         const updatedForm = {
-            ...joinGameForm
+            ...mainForm
         };
         const updatedFormElement = {
             ...updatedForm[inputIdentifier]
         };
+
         updatedFormElement.value = event.target.value;
-        updatedFormElement.valid = FormValidator.validate(updatedFormElement.value, updatedFormElement.validation);
+
+        updatedFormElement.valid = validate(updatedFormElement.value, updatedFormElement.validation);
         updatedFormElement.touched = true;
         updatedForm[inputIdentifier] = updatedFormElement;
 
@@ -51,25 +53,37 @@ const JoinGame = props => {
         for (let inputIdentifiers in form){
             formValid = formValid && form[inputIdentifiers].valid
         }
-        setJoinGameForm(form);
+        setMainForm(updatedForm);
         setFormIsValid(formValid);
     };
 
     const form = [];
-    for (let element in joinGameForm) {
-        form.push(<Input key={element} placeholder={joinGameForm[element].placeholder} type={joinGameForm[element].type} ></Input>)
+    for (let element in mainForm) {
+        form.push(
+        <Input 
+            key={element} 
+            placeholder={mainForm[element].elementConfig.placeholder} 
+            type={mainForm[element].elementConfig.type}
+            onChange={(e) => onInputChangedHandler(e, element)} ></Input>)
     }
-
     return (
         <>
-            <h1>Join Game</h1>
             <form onSubmit={props.onSubmit}>
                 {form}
-                <Button type='Success' disabled={!formIsValid}>Join Game</Button>
+                <Button 
+                    type='Success' 
+                    disabled={!mainForm.isValid} 
+                    onClick={(e) => props.onCreateGame(e, mainForm.username.value)}>Create New Game
+                </Button>
+                <Button 
+                    type='Success' 
+                    disabled={!formIsValid} 
+                    onClick={(e) => props.onJoinGame(e, mainForm.gameCode.value, mainForm.username.value) }>Join Game
+                </Button>
             </form>
         </>
     );
 
 };
 
-export default JoinGame;
+export default MainForm;
