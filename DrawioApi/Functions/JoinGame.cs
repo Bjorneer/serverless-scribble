@@ -69,7 +69,8 @@ namespace DrawioApi
             {
                 GameCode = data.GameCode,
                 Players = players.Select(p => new SlimPlayer { UserName = p.UserName }).ToList(),
-                Started = false
+                Started = false,
+                PlayerID = player.ID
             };
 
             return new OkObjectResult(response);

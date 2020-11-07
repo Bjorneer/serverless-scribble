@@ -55,7 +55,7 @@ namespace DrawioApi
                 Started = state.EntityState.Game.Started
             };
 
-            return new OkObjectResult(state.EntityState);
+            return new OkObjectResult(gameState);
         }
     }
 }
