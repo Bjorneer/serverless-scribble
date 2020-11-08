@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { useHistory } from "react-router-dom";
 import MainForm from './MainForm';
 import Lobby from '../components/Lobby';
 import classes from './css/MainMenu.module.css';
@@ -10,7 +9,6 @@ const MainMenu = props => {
     const [isInLobby, setIsInLobby] = useState(false);
     const [gameState, setGameState] = useState(null);
     const [isLobbyLeader, setIsLobbyLeader] = useState(false);
-    const history = useHistory();
 
     useEffect(() => {
         const interval = window.setInterval(async () => {
@@ -18,12 +16,15 @@ const MainMenu = props => {
                 const res = await GameAPI.getGameState({gamecode: gameState.gamecode, token: gameState.playerId});
                 const data = await res.json();
                 setGameState(data);
+                if(data.started){
+                    props.gameStarting(data);
+                }
             }
         }, 2000);
         return () => {
             window.clearInterval(interval);
         }
-    },[gameState]);
+    },[gameState, props]);
 
     const onJoinGameHandler = async (e, gameCode, username) => {
         e.preventDefault();
@@ -35,7 +36,6 @@ const MainMenu = props => {
 
     const onCreateNewGameHandler = async (e, username) => {
         e.preventDefault();
-        console.log(username);
         const res = await GameAPI.create({username: username});
         const data = await res.json();
         setGameState(data);
@@ -43,8 +43,13 @@ const MainMenu = props => {
         setIsLobbyLeader(true);
     };
 
-    const onGameStartHandler = () => {
-        history.push('/game');
+    const onGameStartHandler = async (e) => {
+        e.preventDefault();
+        const res = await GameAPI.startGame({gamecode: gameState.gamecode, token: gameState.playerId})
+        const data = await res.json();
+        if(data.started){
+            props.gameStarting(data);
+        }
     };
 
     let form = null;

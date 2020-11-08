@@ -1,12 +1,30 @@
-﻿import React, {useState} from 'react';
+﻿import React, {useState, useEffect} from 'react';
 import Canvas from '../components/Canvas';
 import Chat from '../components/Chat';
 import ScoreBoard from '../components/ScoreBoard';
 import Button from '../components/ui/Button';
+import { GameAPI } from '../Helpers/Api';
+import { useHistory } from "react-router-dom";
 
 
 
-const Game = () => {
+
+const Game = props => {
+    const [state, setState] = useState(props.gameState);
+    const history = useHistory();
+    
+    if(!state){
+        history.push('/');
+    }
+    useEffect(() => {
+        const interval = window.setInterval(async () => {
+            const res = await GameAPI.getGameState({gamecode: state.gamecode, token: state.playerId});
+            const data = await res.json();
+            setState(data);
+            console.log(data);
+        }, 2000);
+        return window.clearInterval(interval);
+    }, [state]);
     const users = [
         {
             name: 'Alfred',

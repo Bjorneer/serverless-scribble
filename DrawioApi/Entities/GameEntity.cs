@@ -16,19 +16,20 @@ namespace DrawioFunctions.Entities
 
         public void AddPlayer(Player player)
         {
-            if (Players.Count < 10)
+            if (Players.Count < 10 && !Game.Started)
                 Players.Add(player);
         }
         public void Create(Game game)
         {
             Game = game;
+            CreatedAt = DateTime.Now;
         }
 
         public void RegisterHttpRequest(string id)
         {
             Players = Players.Where(p => p.LastRequestAt.AddSeconds(15) >= DateTime.Now).ToList();
 
-            var player= Players.FirstOrDefault(p => p.ID == id);
+            var player = Players.FirstOrDefault(p => p.ID == id);
             if (player != null)
                 player.LastRequestAt = DateTime.Now;
         }

@@ -1,4 +1,5 @@
 using DrawioFunctions.Entities;
+using DrawioFunctions.Responses;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
@@ -39,11 +40,23 @@ namespace DrawioFunctions
             var entity = await client.ReadEntityStateAsync<GameEntity>(entityId);
             if (!entity.EntityExists || entity.EntityState.Game == null)
                 return new BadRequestObjectResult("No such game exists");
-
-            if (!entity.EntityState.Game.Started)
-                return new BadRequestObjectResult("You are not the owner of this lobby"); 
             
-            return new OkObjectResult("Game has been started");
+            if (!entity.EntityState.Game.Started)
+                return new BadRequestObjectResult("You are not the owner of this lobby");
+
+
+            var gamestate = new GameState
+            {
+                PlayerID = token,
+                GameCode = gamecode,
+                Players = entity.EntityState.Players.Select(p => new SlimPlayer
+                {
+                    UserName = p.UserName
+                }).ToList(),
+                Started = true
+            };
+            
+            return new OkObjectResult(gamestate);
         }
     }
 }
