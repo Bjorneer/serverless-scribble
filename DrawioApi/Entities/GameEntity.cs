@@ -16,8 +16,7 @@ namespace DrawioFunctions.Entities
 
         public void AddPlayer(Player player)
         {
-            if (Players.Count < 10 && !Game.Started)
-                Players.Add(player);
+            Players.Add(player);
         }
         public void Create(Game game)
         {
@@ -36,8 +35,7 @@ namespace DrawioFunctions.Entities
 
         public void StartGame(string callerId)
         {
-            if (Game.OwnerID == callerId)
-                Game.Started = true;
+            Game.Started = true;
         }
 
         [FunctionName(nameof(GameEntity))]

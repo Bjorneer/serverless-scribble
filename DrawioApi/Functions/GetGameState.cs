@@ -10,6 +10,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Primitives;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Web.Http;
 
 namespace DrawioApi
 {
@@ -41,11 +42,6 @@ namespace DrawioApi
                 return new BadRequestObjectResult("No game exists with that gamecode");
 
             await client.SignalEntityAsync(entityId, "RegisterHttpRequest", token);
-
-            state = await client.ReadEntityStateAsync<GameEntity>(entityId);
-
-            if (!state.EntityState.Players.Any(p => p.ID == token))
-                return new BadRequestObjectResult("You are not present in this lobby");
 
             var gameState = new GameState
             {

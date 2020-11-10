@@ -15,6 +15,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Web.Http;
 
 namespace DrawioApi
 {
@@ -48,12 +49,15 @@ namespace DrawioApi
                 var state = await client.ReadEntityStateAsync<GameEntity>(entityId);
                 if (!state.EntityExists || state.EntityState.Game == null)
                     return new BadRequestObjectResult("No such game exists");
-                
+
+                if (state.EntityState.Players.Count() >= 10)
+                    return new BadRequestErrorMessageResult("Lobby is already full");
+
+                if (state.EntityState.Game.Started)
+                    return new BadRequestErrorMessageResult("Game has already started");
+
                 if(state.EntityState.Players.Any(t => t.UserName == player.UserName))
                     return new BadRequestObjectResult("Your username is not unique to this lobby");
-
-                if (state.EntityState.Players.Count >= 10)
-                    return new BadRequestObjectResult("Lobby is full, max players per lobby is 10");
 
                 await client.SignalEntityAsync(entityId, "AddPlayer", player);
 

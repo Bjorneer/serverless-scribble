@@ -35,15 +35,19 @@ namespace DrawioFunctions
             string gamecode = gamecodeQuery.First();
 
             var entityId = new EntityId("GameEntity", gamecode);
-            await client.SignalEntityAsync(entityId, "StartGame", token);
 
             var entity = await client.ReadEntityStateAsync<GameEntity>(entityId);
+
             if (!entity.EntityExists || entity.EntityState.Game == null)
                 return new BadRequestObjectResult("No such game exists");
             
-            if (!entity.EntityState.Game.Started)
+            if (entity.EntityState.Game.Started)
+                return new BadRequestObjectResult("This game has already started");
+
+            if (entity.EntityState.Game.OwnerID != token)
                 return new BadRequestObjectResult("You are not the owner of this lobby");
 
+            await client.SignalEntityAsync(entityId, "StartGame", token);
 
             var gamestate = new GameState
             {
