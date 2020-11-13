@@ -19,6 +19,12 @@ namespace DrawioFunctions.Responses
 
         [JsonProperty(PropertyName = "playerId")]
         public string PlayerID { get; set; }
+
+        [JsonProperty(PropertyName = "word")]
+        public string Word { get; set; }
+
+        [JsonProperty(PropertyName = "secondsLeft")]
+        public int SecondsLeft { get; set; }
     }
 
     public class SlimPlayer
@@ -28,5 +34,8 @@ namespace DrawioFunctions.Responses
 
         [JsonProperty(PropertyName = "score")]
         public int Score { get; set; }
+
+        [JsonProperty(PropertyName = "state")]
+        public PlayerState PlayerState { get; set; }
     }
 }

@@ -24,6 +24,16 @@ namespace DrawioFunctions.Entities
             CreatedAt = DateTime.Now;
         }
 
+        public void AcceptPlayerAnswer(string id)
+        {
+            var p = Players.FirstOrDefault(p => p.ID == id);
+            if(p != null)
+            {
+                p.State = PlayerState.Accepted;
+                p.Score += 100;
+            }
+        }
+
         public void RegisterHttpRequest(string id)
         {
             Players = Players.Where(p => p.LastRequestAt.AddSeconds(15) >= DateTime.Now).ToList();
@@ -35,6 +45,7 @@ namespace DrawioFunctions.Entities
 
         public void StartGame(string callerId)
         {
+            Game.CurretWord = "Hello";
             Game.Started = true;
         }
 

@@ -1,12 +1,16 @@
-using System;
-using System.IO;
-using System.Threading.Tasks;
+using DrawioFunctions.Entities;
+using DrawioFunctions.Requests;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
+using Microsoft.Azure.WebJobs.Extensions.DurableTask;
 using Microsoft.Azure.WebJobs.Extensions.Http;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using System;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace DrawioFunctions
 {
@@ -14,22 +18,29 @@ namespace DrawioFunctions
     {
         [FunctionName(nameof(MakeGuess))]
         public async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = null)] HttpRequest req,
-            ILogger log)
+            [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = null)] HttpRequest req,
+            ILogger log, [DurableClient] IDurableEntityClient client)
         {
             log.LogInformation("C# HTTP trigger function processed a request.");
 
-            string name = req.Query["name"];
-
             string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
-            dynamic data = JsonConvert.DeserializeObject(requestBody);
-            name = name ?? data?.name;
+            var guessReq = JsonConvert.DeserializeObject<MakeGuessRequest>(requestBody);
 
-            string responseMessage = string.IsNullOrEmpty(name)
-                ? "This HTTP triggered function executed successfully. Pass a name in the query string or in the request body for a personalized response."
-                : $"Hello, {name}. This HTTP triggered function executed successfully.";
+            var entityID = new EntityId("GameEntity", guessReq.GameCode);
+            var game = await client.ReadEntityStateAsync<GameEntity>(entityID);
 
-            return new OkObjectResult(responseMessage);
+            if (!game.EntityExists || game.EntityState.Game == null)
+                return new BadRequestResult();
+
+            if (!game.EntityState.Players.Any(p => p.ID == guessReq.PlayerID && p.State == Models.PlayerState.Normal))
+                return new BadRequestResult();
+
+            if (game.EntityState.Game.CurretWord != guessReq.Guess)
+                return new BadRequestObjectResult("Incorrect answer");
+
+            await client.SignalEntityAsync(entityID, "AcceptPlayerAnswer", guessReq.PlayerID);
+
+            return new OkResult();
         }
     }
 }

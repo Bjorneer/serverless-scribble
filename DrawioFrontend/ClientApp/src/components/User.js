@@ -5,9 +5,6 @@ import classes from './css/User.module.css';
 const User = props => {
     let extraClass = '';
     switch (props.type){
-        case 'Disabled':
-            extraClass = classes.Disabled;
-            break;
         case 'Painter':
             extraClass = classes.Painter;
             break;

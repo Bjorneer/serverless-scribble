@@ -1,51 +1,52 @@
 ﻿import React, {useState, useEffect} from 'react';
 import Canvas from '../components/Canvas';
-import Chat from '../components/Chat';
+import Guesser from '../components/Guesser';
 import ScoreBoard from '../components/ScoreBoard';
 import Button from '../components/ui/Button';
 import { GameAPI } from '../Helpers/Api';
 import { useHistory } from "react-router-dom";
 
-
+const USER_TYPES = [
+    '',
+    'Painter',
+    'Accepted'
+];
 
 
 const Game = props => {
-    const [state, setState] = useState(props.gameState);
+    const [state, setState] = useState(props.gameState);//useState({players: [{username: 'Alfred', score: 100, state: 0}]})
     const history = useHistory();
-    
+
     if(!state){
         history.push('/');
     }
+
     useEffect(() => {
         const interval = window.setInterval(async () => {
             const res = await GameAPI.getGameState({gamecode: state.gamecode, token: state.playerId});
             const data = await res.json();
             setState(data);
-            console.log(data);
         }, 2000);
-        return window.clearInterval(interval);
-    }, [state]);
-    const users = [
-        {
-            name: 'Alfred',
-            score: 100,
-            type: 'Disabled'
-        },
-        {
-            name: 'Mattias',
-            score: 300,
-            type: 'Painter'
-        },
-        {
-            name: 'Filip',
-            score: 500,
-            type: 'Accepted'
-        },
-        {
-            name: 'olle',
-            score: 1000
+        return () => {
+            window.clearInterval(interval);
         }
-    ];
+    }, [state]);
+    
+
+    const users = state.players.map((p) => {
+        return{
+            name: p.username,
+            score: p.score,
+            type: USER_TYPES[p.state]
+        };
+    });
+
+    const onGuessMade = (guess) => {
+        GameAPI.makeGuess({gamecode: state.gamecode, token: state.playerId, guess: guess})
+            .catch(err => {
+                console.log(err);
+            });
+    };
 
     const draw = (ctx, frameCount) => {
         ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height)
@@ -60,7 +61,7 @@ const Game = props => {
             <Button type='Warning'><h4>EXIT GAME</h4></Button>
             <ScoreBoard users={users}/>
             <Canvas draw={draw}/>
-            <Chat></Chat>
+            <Guesser onGuessMade={onGuessMade}></Guesser>
         </div>
     );
 };

@@ -18,7 +18,7 @@ namespace DrawioApi
     {
         [FunctionName(nameof(GetGameState))]
         public async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Function, "get", Route = null)] HttpRequest req,
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = null)] HttpRequest req,
             ILogger log,
             [DurableClient] IDurableEntityClient client)
         {
@@ -47,8 +47,14 @@ namespace DrawioApi
             {
                 PlayerID = token,
                 GameCode = gamecode,
-                Players = state.EntityState.Players.Select(p => new SlimPlayer { UserName = p.UserName}).ToList(),
-                Started = state.EntityState.Game.Started
+                Players = state.EntityState.Players.Select(p => new SlimPlayer 
+                { 
+                    UserName = p.UserName,
+                    PlayerState = p.State,
+                    Score = p.Score
+                }).ToList(),
+                Started = state.EntityState.Game.Started,
+                
             };
 
             return new OkObjectResult(gameState);

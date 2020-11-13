@@ -5,7 +5,8 @@ export const APIUrls = {
     create: '/CreateGame',
     join: '/JoinGame',
     getGameState: '/GetGameState',
-    startGame: '/StartGame'
+    startGame: '/StartGame',
+    makeGuess: '/MakeGuess'
 };
 
 const postRequest = (url, data) => {
@@ -36,4 +37,7 @@ export const GameAPI = {
     startGame: (data) => {
         return getRequest(APIUrls.startGame + '?token=' + data.token + '&gamecode=' + data.gamecode);
     },
+    makeGuess: (data) => {
+        return postRequest(APIUrls.makeGuess, data);
+    }
 };

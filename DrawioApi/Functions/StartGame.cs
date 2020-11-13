@@ -16,7 +16,7 @@ namespace DrawioFunctions
     {
         [FunctionName(nameof(StartGame))]
         public async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Function, "get", Route = null)] HttpRequest req,
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = null)] HttpRequest req,
             ILogger log,
             [DurableClient] IDurableEntityClient client)
         {
@@ -55,9 +55,12 @@ namespace DrawioFunctions
                 GameCode = gamecode,
                 Players = entity.EntityState.Players.Select(p => new SlimPlayer
                 {
-                    UserName = p.UserName
+                    UserName = p.UserName,
+                    PlayerState = Models.PlayerState.Normal
                 }).ToList(),
-                Started = true
+                Started = true,
+                SecondsLeft = 90,
+                Word = "Hello"
             };
             
             return new OkObjectResult(gamestate);

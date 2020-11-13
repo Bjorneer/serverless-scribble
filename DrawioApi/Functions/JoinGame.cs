@@ -23,7 +23,7 @@ namespace DrawioApi
     {
         [FunctionName(nameof(JoinGame))]
         public async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Function, "post", Route = null)] HttpRequest req,
+            [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = null)] HttpRequest req,
             ILogger log,
             [DurableClient] IDurableEntityClient client)
         {

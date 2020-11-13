@@ -10,5 +10,13 @@ namespace DrawioFunctions.Models
         public string UserName { get; set; }
         public int Score { get; set; }
         public DateTime LastRequestAt { get; set; }
+        public PlayerState State { get; set; }
+    }
+
+    public enum PlayerState
+    {
+        Normal,
+        Painter,
+        Accepted
     }
 }

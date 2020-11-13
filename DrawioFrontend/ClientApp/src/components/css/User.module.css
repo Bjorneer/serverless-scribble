@@ -18,9 +18,3 @@
     background-color: rgba(0, 200,0, 0.8);
     background-image: linear-gradient(to right,  rgba(0, 200,0, 0.8), white);
 }
-
-.Disabled {
-    background-color: rgb(200,200,200, 0.8);
-    background-image: linear-gradient(to right,  rgb(200,200,200), white);
-    color: rgba(100,100,100, 0.4);
-}
