@@ -54,8 +54,10 @@ namespace DrawioApi
                     Score = p.Score
                 }).ToList(),
                 Started = state.EntityState.Game.Started,
-                
+
             };
+            if (state.EntityState.Game.PainterId == token)
+                gameState.Word = state.EntityState.Game.CurretWord;
 
             return new OkObjectResult(gameState);
         }

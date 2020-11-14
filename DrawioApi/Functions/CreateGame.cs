@@ -46,7 +46,7 @@ namespace DrawioApi
                 GameCode = gamecode,
                 OwnerID = player.ID,
                 RoundsLeft = 10,
-                SecondsPerRound = 90
+                SecondsPerRound = 30
             };
             try
             {

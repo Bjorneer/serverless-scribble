@@ -55,13 +55,17 @@ const Game = props => {
         ctx.arc(50, 100, 20*Math.sin(frameCount*0.05)**2, 0, 2*Math.PI)
         ctx.fill()
       }
+    const word = state.word;
+    if(word){
 
+    }
     return (
         <div>
             <Button type='Warning'><h4>EXIT GAME</h4></Button>
             <ScoreBoard users={users}/>
             <Canvas draw={draw}/>
             <Guesser onGuessMade={onGuessMade}></Guesser>
+            {state.word ? <p>WORD TO DRAW: {state.word}</p>: null}
         </div>
     );
 };
