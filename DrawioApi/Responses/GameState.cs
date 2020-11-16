@@ -27,7 +27,7 @@ namespace DrawioFunctions.Responses
         public int SecondsLeft { get; set; }
 
         [JsonProperty(PropertyName = "isPainter")]
-        public int IsPainter{ get; set; }
+        public bool IsPainter{ get; set; }
     }
 
     public class SlimPlayer

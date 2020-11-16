@@ -57,7 +57,10 @@ namespace DrawioApi
 
             };
             if (state.EntityState.Game.PainterId == token)
+            {
                 gameState.Word = state.EntityState.Game.CurretWord;
+                gameState.IsPainter = true;
+            }
 
             return new OkObjectResult(gameState);
         }
