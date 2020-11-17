@@ -33,7 +33,11 @@ export const GameAPI = {
         return postRequest(APIUrls.join, data);
     },
     getGameState: (data) => {
-        return getRequest(APIUrls.getGameState + '?token=' + data.token + '&gamecode=' + data.gamecode);
+        let fcs = '';
+        console.log(data);
+        if(data.drawFrom !== null)
+            fcs = '&drawFrom=' + data.drawFrom;
+        return getRequest(APIUrls.getGameState + '?token=' + data.token + '&gamecode=' + data.gamecode + fcs);
     },
     startGame: (data) => {
         return getRequest(APIUrls.startGame + '?token=' + data.token + '&gamecode=' + data.gamecode);

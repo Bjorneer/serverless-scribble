@@ -54,12 +54,20 @@ namespace DrawioApi
                     Score = p.Score
                 }).ToList(),
                 Started = state.EntityState.Game.Started,
-
             };
             if (state.EntityState.Game.PainterId == token)
             {
                 gameState.Word = state.EntityState.Game.CurretWord;
                 gameState.IsPainter = true;
+            }
+            if (state.EntityState.Game.Started)
+            {
+                req.Query.TryGetValue("drawFrom", out StringValues drawFromObj);
+
+                if(drawFromObj.Count > 0 && int.TryParse(drawFromObj.First(), out int drawFrom) && drawFrom < state.EntityState.DrawObjects.Count)
+                {
+                    gameState.MovesToDraw = state.EntityState.DrawObjects.GetRange(drawFrom, state.EntityState.DrawObjects.Count - drawFrom);
+                }
             }
 
             return new OkObjectResult(gameState);

@@ -14,6 +14,7 @@ namespace DrawioFunctions.Entities
         public Game Game { get; set; }
         public List<Player> Players { get; set; } = new List<Player>();
         public DateTime CreatedAt { get; set; }
+        public List<DrawObject> DrawObjects { get; set; } = new List<DrawObject>();
 
         public void AddPlayer(Player player)
         {
@@ -54,11 +55,18 @@ namespace DrawioFunctions.Entities
             StartNewRound();
         }
 
+        public void AddDrawObjects(List<DrawObject> objects)
+        {
+            DrawObjects.AddRange(objects);
+        }
+
         string[] words = new string[] { "house", "car", "lightbulb", "mouse", "cat", "skyscraper", "ship", "gun", "god", "child", "school" };
 
         private void StartNewRound()
         {
             Game.RoundsLeft--;
+            DrawObjects.Clear();
+            DrawObjects.Add(new DrawObject { Clear = true });
             Game.EndOfRound = DateTime.Now.AddSeconds(Game.SecondsPerRound);
             Players.ForEach(p => p.State = PlayerState.Normal);
             if(Players.Count > 0)

@@ -12,10 +12,20 @@ const USER_TYPES = [
     'Accepted'
 ];
 
+let drawObjects = [];
+
+const sendDrawObjects = (token, gamecode) => {
+    GameAPI.sendDraw({drawObjects: drawObjects, token: token, gamecode: gamecode})
+    .catch(err => {
+        console.log(err);
+    });
+    drawObjects = [];
+}
 
 const Game = props => {
     const [state, setState] = useState(props.gameState);//useState({word: 'cat', isPainter: true, players: [{username: 'Alfred', score: 100, state: 1}]})
     const history = useHistory();
+    const [frameCounter, setFrameCounter] = useState(0);
     const [canvas, setCanvas] = useState({
         brushColor: '#000000',
         lineWidth: 4,
@@ -25,24 +35,34 @@ const Game = props => {
         clear: false
     });
 
-    console.log(state);
     if(!state){
         history.push('/');
     }
 
     useEffect(() => {
         const interval = window.setInterval(async () => {
-            const res = await GameAPI.getGameState({gamecode: state.gamecode, token: state.playerId});
+            const res = await GameAPI.getGameState({gamecode: state.gamecode, token: state.playerId, drawFrom: frameCounter});
             const data = await res.json();
             if(data !== null){
                 setState(data);
+                setFrameCounter(prev => prev + data.movesToDraw.length)
             }
-        }, 2000);
+        }, 1000);
         return () => {
             window.clearInterval(interval);
         }
     }, [state]);
     
+    useEffect(() => {
+        const interval = window.setInterval(async () => {
+            if (state.isPainter && drawObjects.length > 0){
+                sendDrawObjects(state.playerId, state.gamecode);
+            }
+        }, 1000);
+        return () => {
+            window.clearInterval(interval);
+        }
+    }, [state]);
 
     const users = state.players.map((p) => {
         return{
@@ -59,11 +79,8 @@ const Game = props => {
             });
     };
 
-    const onRegisterDraw = (drawObj) => { // change to make api call in useEffect later to send chuck of draw obj VIKTIGT
-        GameAPI.sendDraw({...drawObj, token: state.playerId, gamecode: state.gamecode})
-            .catch(err => {
-                console.log(err);
-            });
+    const onRegisterDraw = (drawObj) => { 
+        drawObjects.push(drawObj);
     }
 
     return (
@@ -71,7 +88,7 @@ const Game = props => {
             <Button type='Warning'><h4>EXIT GAME</h4></Button>
             <ScoreBoard users={users}/>
             <div style={{width: '400px', height: '400px', backgroundColor: 'white', border: '1px solid black'}}>
-                <Canvas isPainter={state.isPainter} registerDraw={onRegisterDraw} {...canvas}/>
+                <Canvas isPainter={state.isPainter} registerDraw={onRegisterDraw} {...canvas} toDraw={state.movesToDraw}/>
             </div>
             <Guesser onGuessMade={onGuessMade}></Guesser>
             {state.word ? <p>WORD TO DRAW: {state.word}</p>: null}

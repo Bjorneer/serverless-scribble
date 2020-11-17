@@ -26,7 +26,7 @@ class Canvas extends React.Component {
           this.resetCanvas();
         }
         else{
-          this.draw(e.fromX, e.fromY, e.toX, e.toY, e.color, e.width);
+          this.draw(e.fromX, e.fromY, e.toX, e.toY, e.color, e.width, true);
         }
       });
     }
@@ -130,7 +130,7 @@ class Canvas extends React.Component {
     }
   }
 
-  draw(lX, lY, cX, cY, color, width) {
+  draw(lX, lY, cX, cY, color, width, dontRegister) {
     const newContext = this.state.context;
     newContext.strokeStyle = color ? color : this.props.brushColor;
     newContext.lineWidth = width ? width : this.props.lineWidth;
@@ -140,7 +140,9 @@ class Canvas extends React.Component {
     this.state.context.moveTo(lX, lY);
     this.state.context.lineTo(cX, cY);
     this.state.context.stroke();
-    this.props.registerDraw({color: this.props.brushColor, width: this.props.lineWidth, fromX: lX, fromY: lY, toX: cX, toY: cY});
+    if (this.props.isPainter && dontRegister === false){
+      this.props.registerDraw({color: this.props.brushColor, width: this.props.lineWidth, fromX: lX, fromY: lY, toX: cX, toY: cY});
+    }
   }
 
   resetCanvas(){

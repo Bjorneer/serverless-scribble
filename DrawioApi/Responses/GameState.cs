@@ -28,6 +28,9 @@ namespace DrawioFunctions.Responses
 
         [JsonProperty(PropertyName = "isPainter")]
         public bool IsPainter{ get; set; }
+
+        [JsonProperty(PropertyName = "movesToDraw")]
+        public List<DrawObject> MovesToDraw { get; set; } = new List<DrawObject>();
     }
 
     public class SlimPlayer

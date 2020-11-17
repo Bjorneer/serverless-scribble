@@ -60,7 +60,6 @@ namespace DrawioFunctions
                 }).ToList(),
                 Started = true,
                 SecondsLeft = 90,
-                Word = "Hello"
             };
             
             return new OkObjectResult(gamestate);
