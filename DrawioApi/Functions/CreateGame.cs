@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.DurableTask;
 using Microsoft.Azure.WebJobs.Extensions.Http;
+using Microsoft.Azure.WebJobs.Extensions.SignalRService;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System;
@@ -19,11 +20,12 @@ namespace DrawioApi
     {
         private Random _random = new Random();
 
-        [FunctionName(nameof(CreateGame))]
+        [FunctionName("create")]
         public async Task<IActionResult> Run(
             [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = null)] HttpRequest req,
             ILogger log,
-            [DurableClient] IDurableEntityClient client)
+            [DurableClient] IDurableEntityClient client,
+            [SignalR(HubName = "game")] IAsyncCollector<SignalRGroupAction> signalRGroupActions)
         {
             string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
             var data = JsonConvert.DeserializeObject<CreateGameRequest>(requestBody);
@@ -59,6 +61,15 @@ namespace DrawioApi
                 log.LogError("EXCEPTION: " + e.Message);
                 return new BadRequestObjectResult($"Failed to create game with code {gamecode} and playerid {player.ID}.");
             }
+
+            await signalRGroupActions.AddAsync(
+                new SignalRGroupAction
+                {
+                    UserId = player.ID,
+                    GroupName = gamecode,
+                    Action = GroupAction.Add
+                });
+
             var response = new GameState
             {
                 GameCode = gamecode,
