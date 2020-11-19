@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.Azure.WebJobs;
+using Microsoft.Azure.WebJobs.Extensions.DurableTask;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Azure.WebJobs.Extensions.SignalRService;
 using System.Security.Claims;
@@ -23,6 +24,7 @@ namespace DrawioFunctions.Functions
             ClaimsPrincipal claimsPrincipal,
             [SignalR(HubName = "game")] IAsyncCollector<SignalRGroupAction> signalRGroupActions)
         {
+
             var userIdClaim = claimsPrincipal.FindFirst(ClaimTypes.NameIdentifier);
             return signalRGroupActions.AddAsync(
                 new SignalRGroupAction

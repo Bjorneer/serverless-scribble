@@ -40,8 +40,5 @@ namespace DrawioFunctions.Responses
 
         [JsonProperty(PropertyName = "score")]
         public int Score { get; set; }
-
-        [JsonProperty(PropertyName = "state")]
-        public PlayerState PlayerState { get; set; }
     }
 }
