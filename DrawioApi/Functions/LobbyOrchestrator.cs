@@ -2,9 +2,11 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
 using DrawioFunctions.Models;
+using DrawioFunctions.Requests;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.DurableTask;
 using Microsoft.Azure.WebJobs.Extensions.Http;
+using Microsoft.Azure.WebJobs.Extensions.SignalRService;
 using Microsoft.Azure.WebJobs.Host;
 using Microsoft.Extensions.Logging;
 
@@ -31,7 +33,7 @@ namespace Scribble.Functions.Functions
                     game.Players.Add(joinGameEventTask.Result);
                     context.SetCustomStatus(game);
 
-                    await context.CallActivityAsync("LobbyOrchestrator_Join", joinGameEventTask.Result);
+                    await context.CallActivityAsync("LobbyOrchestrator_Join", new JoinRequest { UserName = joinGameEventTask.Result.UserName, GameCode = context.InstanceId });
 
                     joinGameEventTask = context.WaitForExternalEvent<Player>("Join");
                 }
@@ -41,27 +43,37 @@ namespace Scribble.Functions.Functions
                 }
             }
 
-            context.StartNewOrchestration(nameof(GameOrchestrator), game, "s" + context.InstanceId);
+            context.StartNewOrchestration(nameof(GameOrchestrator), game, "g" + context.InstanceId);
 
-            await context.CallActivityAsync("LobbyOrchestrator_Start", null);
+            await context.CallActivityAsync("LobbyOrchestrator_Start", context.InstanceId);
 
             return game;
         }
 
         [FunctionName("LobbyOrchestrator_Join")]
-        public static void Join(
-            [ActivityTrigger] Player name,
-            ILogger log)
+        public static Task Join(
+            [ActivityTrigger] JoinRequest req,
+            [SignalR(HubName = "game")] IAsyncCollector<SignalRMessage> signalRMessages)
         {
-            //Send out signal to all clients that user joined/might move some entity logic here
+            return signalRMessages.AddAsync(new SignalRMessage
+            {
+                GroupName = req.GameCode,
+                Target = "userJoined",
+                Arguments =  new[] { req.UserName }
+            });
         }
 
         [FunctionName("LobbyOrchestrator_Start")]
-        public static void Start(
-            [ActivityTrigger] string input,
-            ILogger log)
+        public static Task Start(
+            [ActivityTrigger] string instanceId,
+            [SignalR(HubName = "game")] IAsyncCollector<SignalRMessage> signalRMessages)
         {
-            //Send out signal to all clients that game has started/might be good to move entity logic here
+            return signalRMessages.AddAsync(new SignalRMessage
+            {
+                GroupName = instanceId,
+                Target = "userJoined",
+                Arguments = null
+            });
         }
     }
 }

@@ -17,15 +17,17 @@ namespace Scribble.Functions.Functions
         {
             return connectionInfo;
         }
-
-        [FunctionName("addToGroup")]
-        public static Task AddToGroup(
+        //https://charliedigital.com/2019/09/02/azure-functions-signalr-and-authorization/
+        //https://docs.microsoft.com/en-us/azure/azure-functions/functions-bindings-signalr-service-output?tabs=csharp
+        //https://docs.microsoft.com/en-us/azure/azure-signalr/signalr-concept-serverless-development-config
+        [FunctionName("joinGroup")]
+        public static Task JoinGroup( // call from client
             [HttpTrigger(AuthorizationLevel.Anonymous, "post")] HttpRequest req,
             ClaimsPrincipal claimsPrincipal,
             [SignalR(HubName = "game")] IAsyncCollector<SignalRGroupAction> signalRGroupActions)
         {
 
-            var userIdClaim = claimsPrincipal.FindFirst(ClaimTypes.NameIdentifier);
+            var userIdClaim = claimsPrincipal.FindFirst(ClaimTypes.NameIdentifier); // hämta bara userid från url´query/body/header
             return signalRGroupActions.AddAsync(
                 new SignalRGroupAction
                 {
@@ -36,8 +38,8 @@ namespace Scribble.Functions.Functions
         }
 
 
-        [FunctionName("removeFromGroup")]
-        public static Task RemoveFromGroup(
+        [FunctionName("leaveGroup")]
+        public static Task leaveGroup(
             [HttpTrigger(AuthorizationLevel.Anonymous, "post")] HttpRequest req,
             ClaimsPrincipal claimsPrincipal,
             [SignalR(HubName = "game")]

@@ -5,12 +5,12 @@ using System.Text;
 
 namespace DrawioFunctions.Requests
 {
-    public class JoinGameRequest
+    public class StartRequest
     {
-        [JsonProperty(PropertyName = "username")]
-        public string UserName { get; set; }
+        [JsonProperty(PropertyName = "token")]
+        public string PlayerID { get; set; }
 
         [JsonProperty(PropertyName = "gamecode")]
-        public string GameCode{ get; set; }
+        public string GameCode { get; set; }
     }
 }

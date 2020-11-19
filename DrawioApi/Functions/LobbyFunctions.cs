@@ -1,4 +1,3 @@
-using DrawioFunctions.Entities;
 using DrawioFunctions.Models;
 using DrawioFunctions.Requests;
 using DrawioFunctions.Responses;
@@ -32,11 +31,11 @@ namespace Scribble.Functions.Functions
             [DurableClient] IDurableOrchestrationClient starter)
         {
             string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
-            var data = JsonConvert.DeserializeObject<CreateGameRequest>(requestBody);
+            var data = JsonConvert.DeserializeObject<CreateRequest>(requestBody);
 
             data.UserName = data.UserName.Replace(" ", "");
 
-            if (string.IsNullOrEmpty(data.UserName) || data.UserName.Length < 5)
+            if (string.IsNullOrEmpty(data.UserName) || data.UserName.Length < 5 )
                 return new BadRequestResult();
 
             var player = new Player
@@ -55,8 +54,6 @@ namespace Scribble.Functions.Functions
             };
             try
             {
-                var entityId = new EntityId("GameEntity", gamecode);
-
                 await starter.StartNewAsync(nameof(LobbyOrchestrator), gamecode, newGame);
             }
             catch (Exception e)
@@ -82,11 +79,11 @@ namespace Scribble.Functions.Functions
             [DurableClient] IDurableOrchestrationClient client)
         {
             string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
-            var data = JsonConvert.DeserializeObject<JoinGameRequest>(requestBody);
+            var data = JsonConvert.DeserializeObject<JoinRequest>(requestBody);
 
             data.UserName = data.UserName.Replace(" ", "");
 
-            if (string.IsNullOrEmpty(data.UserName) || data.UserName.Length < 5)
+            if (string.IsNullOrWhiteSpace(data.UserName) || data.UserName.Length < 5 || string.IsNullOrWhiteSpace(data.GameCode))
                 return new BadRequestResult();
 
             var player = new Player
@@ -128,7 +125,7 @@ namespace Scribble.Functions.Functions
             [DurableClient] IDurableOrchestrationClient client)
         {
             string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
-            var data = JsonConvert.DeserializeObject<StartGameRequest>(requestBody);
+            var data = JsonConvert.DeserializeObject<StartRequest>(requestBody);
 
             if(data.GameCode == null || data.PlayerID == null)
                 return new BadRequestResult();
