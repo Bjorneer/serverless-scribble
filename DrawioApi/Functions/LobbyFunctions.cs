@@ -11,13 +11,14 @@ using Microsoft.Azure.WebJobs.Extensions.SignalRService;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Primitives;
 using Newtonsoft.Json;
+using Scribble.Functions.Functions;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace DrawioFunctions.Functions
+namespace Scribble.Functions.Functions
 {
     public static class LobbyFunctions
     {

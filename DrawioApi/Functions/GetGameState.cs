@@ -1,4 +1,3 @@
-using DrawioFunctions.Entities;
 using DrawioFunctions.Models;
 using DrawioFunctions.Responses;
 using Microsoft.AspNetCore.Http;

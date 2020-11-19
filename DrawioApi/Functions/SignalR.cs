@@ -6,7 +6,7 @@ using Microsoft.Azure.WebJobs.Extensions.SignalRService;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
-namespace DrawioFunctions.Functions
+namespace Scribble.Functions.Functions
 {
     public static class SignalR
     {

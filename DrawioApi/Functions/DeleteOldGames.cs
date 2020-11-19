@@ -1,11 +1,10 @@
 using System;
-using DrawioFunctions.Entities;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.DurableTask;
 using Microsoft.Azure.WebJobs.Host;
 using Microsoft.Extensions.Logging;
 
-namespace DrawioFunctions.Functions
+namespace Scribble.Functions.Functions
 {
     public static class DeleteOldGames
     {

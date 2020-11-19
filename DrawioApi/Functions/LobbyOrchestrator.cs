@@ -8,7 +8,7 @@ using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Azure.WebJobs.Host;
 using Microsoft.Extensions.Logging;
 
-namespace DrawioFunctions.Functions
+namespace Scribble.Functions.Functions
 {
     public static class LobbyOrchestrator
     {
