@@ -3,8 +3,8 @@ import Canvas from '../components/Canvas';
 import Guesser from '../components/Guesser';
 import ScoreBoard from '../components/ScoreBoard';
 import Button from '../components/ui/Button';
-import { GameAPI } from '../Helpers/Api';
 import { useHistory } from "react-router-dom";
+import { ApiFactory } from '../Helpers/Api';
 
 const USER_TYPES = [
     '',
@@ -12,18 +12,13 @@ const USER_TYPES = [
     'Accepted'
 ];
 
-let drawObjects = [];
-
-const sendDrawObjects = (token, gamecode) => {
-    GameAPI.sendDraw({drawObjects: drawObjects, token: token, gamecode: gamecode})
-    .catch(err => {
-        console.log(err);
-    });
-    drawObjects = [];
-}
+let onNewRound;
+let onMakePainter;
+let onGuessCorrect;
+let onDraw;
 
 const Game = props => {
-    const [state, setState] = useState(props.gameState);//useState({word: 'cat', isPainter: true, players: [{username: 'Alfred', score: 100, state: 1}]})
+    const [state, setState] = useState({...props.gameState, players: props.gameState.players.map(p => {return {...p, state: 0}})});//useState({word: 'cat', isPainter: true, players: [{username: 'Alfred', score: 100, state: 1}]})
     const history = useHistory();
     const [frameCounter, setFrameCounter] = useState(0);
     const [canvas, setCanvas] = useState({
@@ -34,35 +29,50 @@ const Game = props => {
         },
         clear: false
     });
-
-    if(!state){
-        history.push('/');
-    }
+    const [hubConnection] = useState(props.hubConnection);
 
     useEffect(() => {
-        const interval = window.setInterval(async () => {
-            const res = await GameAPI.getGameState({gamecode: state.gamecode, token: state.playerId, drawFrom: frameCounter});
-            const data = await res.json();
-            if(data !== null){
-                setState(data);
-                setFrameCounter(prev => prev + data.movesToDraw.length)
-            }
-        }, 1000);
-        return () => {
-            window.clearInterval(interval);
-        }
-    }, [state]);
-    
+        onNewRound = drawer => {
+            console.log('onNewRound: ' + drawer);
+            setState(oState => {
+                const newP = {...(oState.players.find(p => p.username === drawer))};
+                newP.state = 1;
+                const newPlayers = [...(oState.players.filter(p => p.username !== drawer).map(p => {return {...p, state: 0}}))];
+                newPlayers.push(newP);
+                const newState = {...oState, word: null, players: newPlayers};
+                return newState;
+            })
+        };
+        onMakePainter = word => {
+            console.log('onMakePainter: ' + word);
+            setState(oState => {
+                const newState = {...oState, word: word};
+                return newState;
+            })
+        };
+        onGuessCorrect = drawer => {
+            setState(oState => {
+                const newP = {...(oState.players.find(p => p.username === drawer))};
+                newP.state = 2;
+                newP.score++;
+                const newPlayers = [...(oState.players.filter(p => p.username !== drawer).map(p => {return {...p, state: 0}}))];
+                newPlayers.push(newP);
+                const newState = {...oState, word: null, players: newPlayers};
+                return newState;
+            })
+        };
+        onDraw = draw => {
+            console.log(draw);
+        };
+    }, []);
+
     useEffect(() => {
-        const interval = window.setInterval(async () => {
-            if (state.isPainter && drawObjects.length > 0){
-                sendDrawObjects(state.playerId, state.gamecode);
-            }
-        }, 1000);
-        return () => {
-            window.clearInterval(interval);
-        }
-    }, [state]);
+        hubConnection.off();
+        hubConnection.on('newRound', (painterName) => { onNewRound(painterName); });
+        hubConnection.on('makePainter', (word) => { onMakePainter(word); });
+        hubConnection.on('guessCorrect', (name) => { onGuessCorrect(name); });
+        hubConnection.on('draw', (drawList) => { onDraw(drawList); });
+    }, [])
 
     const users = state.players.map((p) => {
         return{
@@ -72,15 +82,12 @@ const Game = props => {
         };
     });
 
-    const onGuessMade = (guess) => {
-        GameAPI.makeGuess({gamecode: state.gamecode, token: state.playerId, guess: guess})
-            .catch(err => {
-                console.log(err);
-            });
+    const onGuessMade = async (guess) => {
+        await ApiFactory.guess({guess});
     };
 
-    const onRegisterDraw = (drawObj) => { 
-        drawObjects.push(drawObj);
+    const onRegisterDraw = async (drawObj) => {
+        await ApiFactory.draw({token: state.playerId, gamecode: state.gamecode, drawObjects: drawObj}); // make it not send every draw command
     }
 
     return (

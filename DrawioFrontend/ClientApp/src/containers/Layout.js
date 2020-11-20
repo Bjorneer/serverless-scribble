@@ -9,12 +9,14 @@ import Footer from '../components/Footer';
 
 const Layout = () => {
   const [gameState, setGameState] = useState(null);
+  const [hubConnection, setHubConnection] = useState(null);
   const history = useHistory();
 
 
 
-  const onGameStarting = (gamestate) => {
+  const onGameStarting = (gamestate, hubConnection) => {
       setGameState(gamestate);
+      setHubConnection(hubConnection);
       history.push('/game');
   };
 
@@ -22,7 +24,7 @@ const Layout = () => {
     <>
       <div className={classes.Layout}>
         <Switch>
-          <Route exact path='/game' render={() => <Game gameState={gameState}/>} />
+          <Route exact path='/game' render={() => <Game gameState={gameState} hubConnection={hubConnection}/>} />
           <Route path='/' render={() => <MainMenu gameStarting={onGameStarting}/>} />
         </Switch>
       </div>

@@ -12,7 +12,7 @@ namespace Scribble.Functions.Functions
     {
         [FunctionName("negotiate")]
         public static SignalRConnectionInfo Negotiate(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "get")] HttpRequest req,
+            [HttpTrigger(AuthorizationLevel.Anonymous, "post")] HttpRequest req,
             [SignalRConnectionInfo(HubName = "game", UserId = "{headers.x-ms-signalr-userid}")] SignalRConnectionInfo connectionInfo)
         {
             return connectionInfo;
@@ -23,16 +23,13 @@ namespace Scribble.Functions.Functions
         [FunctionName("joinGroup")]
         public static Task JoinGroup( // call from client
             [HttpTrigger(AuthorizationLevel.Anonymous, "post")] HttpRequest req,
-            ClaimsPrincipal claimsPrincipal,
             [SignalR(HubName = "game")] IAsyncCollector<SignalRGroupAction> signalRGroupActions)
         {
-
-            var userIdClaim = claimsPrincipal.FindFirst(ClaimTypes.NameIdentifier); // hämta bara userid från url´query/body/header
             return signalRGroupActions.AddAsync(
                 new SignalRGroupAction
                 {
-                    UserId = userIdClaim.Value,
-                    GroupName = "myGroup",
+                    UserId = req.Headers["x-ms-signalr-userid"],
+                    GroupName = req.Headers["x-ms-signalr-group"],
                     Action = GroupAction.Add
                 });
         }
@@ -41,16 +38,14 @@ namespace Scribble.Functions.Functions
         [FunctionName("leaveGroup")]
         public static Task leaveGroup(
             [HttpTrigger(AuthorizationLevel.Anonymous, "post")] HttpRequest req,
-            ClaimsPrincipal claimsPrincipal,
-            [SignalR(HubName = "game")]
-            IAsyncCollector<SignalRGroupAction> signalRGroupActions)
+            [SignalR(HubName = "game")] IAsyncCollector<SignalRGroupAction> signalRGroupActions)
         {
-            var userIdClaim = claimsPrincipal.FindFirst(ClaimTypes.NameIdentifier);
+
             return signalRGroupActions.AddAsync(
                 new SignalRGroupAction
                 {
-                    UserId = userIdClaim.Value,
-                    GroupName = "myGroup",
+                    UserId = req.Headers["x-ms-signalr-userid"],
+                    GroupName = req.Headers["x-ms-signalr-group"],
                     Action = GroupAction.Remove
                 });
         }

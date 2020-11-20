@@ -1,51 +1,54 @@
 
-const defaultUrl = 'http://localhost:7071/api'
+export const baseUrl = 'http://localhost:7071/api'
 
 export const APIUrls = {
-    create: '/CreateGame',
-    join: '/JoinGame',
-    getGameState: '/GetGameState',
-    startGame: '/StartGame',
-    makeGuess: '/MakeGuess',
-    sendDraw: '/SendDraw'
+    create: '/create',
+    join: '/join',
+    startGame: '/start',
+    guess: '/guess',
+    draw: '/draw',
+    leaveGroup: '/joinGroup',
+    joinGroup: '/leaveGroup',
+    negotiate: '/negotiate',
+    start: '/start'
 };
 
-const postRequest = (url, data) => {
-    return fetch(defaultUrl + url, {
+const postRequest = (url, data, options) => {
+    return fetch(baseUrl + url, {
         method: 'POST',
         mode: 'cors',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(data)
+        body: JSON.stringify(data),
+        ...options
     });
 };
 
 const getRequest = (url) => {
-    return fetch(defaultUrl + url);
+    return fetch(baseUrl + url);
 };
 
-export const GameAPI = {
+export const ApiFactory = {
     create: (data) => {
         return postRequest(APIUrls.create, data);
     },
     join: (data) => {
         return postRequest(APIUrls.join, data);
     },
-    getGameState: (data) => {
-        let fcs = '';
-        console.log(data);
-        if(data.drawFrom !== null)
-            fcs = '&drawFrom=' + data.drawFrom;
-        return getRequest(APIUrls.getGameState + '?token=' + data.token + '&gamecode=' + data.gamecode + fcs);
+    start: (data) => {
+        return postRequest(APIUrls.start, data);
     },
-    startGame: (data) => {
-        return getRequest(APIUrls.startGame + '?token=' + data.token + '&gamecode=' + data.gamecode);
+    guess: (data) => {
+        return postRequest(APIUrls.guess, data);
     },
-    makeGuess: (data) => {
-        return postRequest(APIUrls.makeGuess, data);
+    draw: (data) => {
+        return postRequest(APIUrls.draw, data);
     },
-    sendDraw: (data) => {
-        return postRequest(APIUrls.sendDraw, data);
+    joinGroup: (data, options) => {
+        return postRequest(APIUrls.joinGroup, data, options);
+    },
+    leaveGroup: (data, options) => {
+        return postRequest(APIUrls.leaveGroup, data, options);
+    },
+    negotiate: (data, options) => {
+        return postRequest(APIUrls.negotiate, data, options)
     }
 };

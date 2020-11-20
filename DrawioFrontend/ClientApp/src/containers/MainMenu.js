@@ -3,53 +3,141 @@ import MainForm from './MainForm';
 import Lobby from '../components/Lobby';
 import classes from './css/MainMenu.module.css';
 import TitleLogo from '../components/ui/TitleLogo';
-import { GameAPI } from '../Helpers/Api';
+import { ApiFactory, baseUrl } from '../Helpers/Api';
+import * as signlaR from '@microsoft/signalr';
+
+let onUserJoined;
+let onGameStarted;
 
 const MainMenu = props => {
     const [isInLobby, setIsInLobby] = useState(false);
     const [gameState, setGameState] = useState(null);
     const [isLobbyLeader, setIsLobbyLeader] = useState(false);
+    const [hubConnection, SetHubConnection] = useState(null);
 
     useEffect(() => {
-        const interval = window.setInterval(async () => {
-            if(gameState){
-                const res = await GameAPI.getGameState({gamecode: gameState.gamecode, token: gameState.playerId});
-                const data = await res.json();
-                setGameState(data);
-                if(data.started){
-                    props.gameStarting(data);
-                }
-            }
-        }, 2000);
-        return () => {
-            window.clearInterval(interval);
-        }
-    },[gameState, props]);
+        onUserJoined = (username) => {
+            setGameState(state => {
+                console.log('User joined: ' + username)
+                const newPlayers = [...state.players];
+                if(!state.players.some(p => p.username === username))
+                    newPlayers.push({username: username, score: 0});
+                const newState = {...state, players: newPlayers}
+                return newState;
+            });
+        };
+
+    }, [])
+
+    useEffect(() => {
+        onGameStarted = () => {
+            console.log(gameState);
+            props.gameStarting(gameState, hubConnection);
+        };
+    }, [gameState, hubConnection]);
 
     const onJoinGameHandler = async (e, gameCode, username) => {
         e.preventDefault();
-        const res = await GameAPI.join({ gamecode: gameCode, username: username })
-        const data = await res.json();
-        setGameState(data);
-        setIsInLobby(true);
+        await ApiFactory.join({ gamecode: gameCode, username: username })
+            .then(res => {
+                if(!res.ok)
+                    throw Error(res.statusText);
+                return res.json();
+            })
+            .then(data => {
+                if(data){
+                    setGameState(data);
+                    setIsInLobby(true);
+
+                    ApiFactory.negotiate({}, {headers: {
+                        'x-ms-signalr-userid': data.playerId
+                    }})
+                    .then(res => res.json())
+                    .then(info => {
+                        console.log(info)
+                        const protocol = new signlaR.JsonHubProtocol();
+                        const hubConn = new signlaR.HubConnectionBuilder()
+                        .withUrl(info.url, {accessTokenFactory: () => info.accessToken})
+                        .withHubProtocol(protocol)
+                        .build();
+
+                        hubConn.on('userJoined', onUserJoined);
+                        hubConn.on('gameStarted', () => { onGameStarted() });
+
+                        hubConn.start()
+                        .then(console.log('Connection established'))
+                        .catch(err => console.error(err));
+    
+                        ApiFactory.joinGroup({}, {headers: {
+                            'x-ms-signalr-userid': data.playerId,
+                            'x-ms-signalr-group': data.gamecode
+                        }})
+                        .then(res => console.log('Group joined'));
+
+                        SetHubConnection(hubConn);
+                    })
+                    .catch(err => console.error(err));
+                }
+            })
+            .catch(err => console.log(err));
     };
 
     const onCreateNewGameHandler = async (e, username) => {
         e.preventDefault();
-        const res = await GameAPI.create({username: username});
-        const data = await res.json();
-        setGameState(data);
-        setIsInLobby(true);
-        setIsLobbyLeader(true);
+        await ApiFactory.create({username: username})
+            .then(res => {
+                if(res.ok)
+                    return res.json();
+            })
+            .then(data => {
+                if(data){
+                    setGameState(data);
+                    setIsInLobby(true);
+                    setIsLobbyLeader(true);
+                  
+                    ApiFactory.negotiate({}, {headers: {
+                        'x-ms-signalr-userid': data.playerId
+                    }})
+                    .then(res => { return res.json();})
+                    .then(info => {
+                        console.log(info)
+                        const protocol = new signlaR.JsonHubProtocol();
+                        const hubConn = new signlaR.HubConnectionBuilder()
+                        .withUrl(info.url, {accessTokenFactory: () => info.accessToken})
+                        .withHubProtocol(protocol)
+                        .build();
+
+                        hubConn.on('userJoined', onUserJoined);
+                        hubConn.on('gameStarted', () => { onGameStarted() });
+
+                        hubConn.start()
+                        .then(console.log('Connection established'))
+                        .catch(err => console.error(err));
+    
+                        ApiFactory.joinGroup({}, {headers: {
+                            'x-ms-signalr-userid': data.playerId,
+                            'x-ms-signalr-group': data.gamecode,
+                        }})
+                        .then(res => console.log('Group joined'));
+
+                        SetHubConnection(hubConn);
+                    })
+                    .catch(err => console.error(err));
+                }
+            })
+            .catch(err => console.log(err));
     };
 
     const onGameStartHandler = async (e) => {
         e.preventDefault();
-        const res = await GameAPI.startGame({gamecode: gameState.gamecode, token: gameState.playerId})
-        const data = await res.json();
-        if(data.started){
-            props.gameStarting(data);
-        }
+        await ApiFactory.start({gamecode: gameState.gamecode, token: gameState.playerId})
+            .then(res => {
+                if(!res.ok)
+                    throw Error(res.statusText);
+
+                console.log(hubConnection);
+            })
+            .catch(err => console.log(err));
     };
 
     let form = null;
