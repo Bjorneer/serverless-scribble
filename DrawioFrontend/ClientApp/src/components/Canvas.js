@@ -13,22 +13,26 @@ class Canvas extends React.Component {
 
     const context = canvas.getContext('2d');
 
+    context.beginPath();
+
     this.setState({
-      canvas,
-      context
+      canvas
     });
   }
 
   componentWillReceiveProps(nextProps) {
-    if (nextProps.toDraw){
+    if(nextProps.toDraw){
       nextProps.toDraw.forEach(e => {
         if(e.clear){
           this.resetCanvas();
         }
-        else{
+        else if(!nextProps.isPainter)
           this.draw(e.fromX, e.fromY, e.toX, e.toY, e.color, e.width, true);
         }
-      });
+      );
+      if(nextProps.toDraw){
+        nextProps.clearToDraw();
+      }
     }
   }
 
@@ -45,7 +49,6 @@ class Canvas extends React.Component {
 
   handleOnTouchStart (e) {
     const rect = this.state.canvas.getBoundingClientRect();
-    this.state.context.beginPath();
     this.setState({
       lastX: e.targetTouches[0].pageX - rect.left,
       lastY: e.targetTouches[0].pageY - rect.top,
@@ -55,8 +58,6 @@ class Canvas extends React.Component {
 
   handleOnMouseDown(e){
     const rect = this.state.canvas.getBoundingClientRect();
-    this.state.context.beginPath();
-
     this.setState({
       lastX: e.clientX - rect.left,
       lastY: e.clientY - rect.top,
@@ -131,24 +132,27 @@ class Canvas extends React.Component {
   }
 
   draw(lX, lY, cX, cY, color, width, dontRegister) {
-    const newContext = this.state.context;
-    newContext.strokeStyle = color ? color : this.props.brushColor;
-    newContext.lineWidth = width ? width : this.props.lineWidth;
-    this.setState({
-      context: newContext
-    });
-    this.state.context.moveTo(lX, lY);
-    this.state.context.lineTo(cX, cY);
-    this.state.context.stroke();
-    if (this.props.isPainter && dontRegister === false){
+    const context = this.state.canvas.getContext('2d');
+
+    context.strokeStyle = color ? color : this.props.brushColor;
+    context.lineWidth = width ? width : this.props.lineWidth;
+
+    context.moveTo(lX, lY);
+    context.lineTo(cX, cY);
+    context.stroke();
+    if (this.props.isPainter && dontRegister !== true){
       this.props.registerDraw({color: this.props.brushColor, width: this.props.lineWidth, fromX: lX, fromY: lY, toX: cX, toY: cY});
     }
   }
 
   resetCanvas(){
-    const width = this.state.context.canvas.width;
-    const height = this.state.context.canvas.height;
-    this.state.context.clearRect(0, 0, width, height);
+    const context = this.state.canvas.getContext('2d');
+
+    const width = context.canvas.width;
+    const height = context.canvas.height;
+    context.clearRect(0, 0, width, height);
+
+    context.beginPath();
   }
 
   canvasStyle(){
@@ -157,7 +161,7 @@ class Canvas extends React.Component {
 
     return assign({}, defaults, custom);
   }
-
+  
   render() {
     return (
       <>

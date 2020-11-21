@@ -3,7 +3,6 @@ import Canvas from '../components/Canvas';
 import Guesser from '../components/Guesser';
 import ScoreBoard from '../components/ScoreBoard';
 import Button from '../components/ui/Button';
-import { useHistory } from "react-router-dom";
 import { ApiFactory } from '../Helpers/Api';
 
 const USER_TYPES = [
@@ -17,10 +16,10 @@ let onMakePainter;
 let onGuessCorrect;
 let onDraw;
 
+let objToSend = [];
+
 const Game = props => {
     const [state, setState] = useState({...props.gameState, players: props.gameState.players.map(p => {return {...p, state: 0}})});//useState({word: 'cat', isPainter: true, players: [{username: 'Alfred', score: 100, state: 1}]})
-    const history = useHistory();
-    const [frameCounter, setFrameCounter] = useState(0);
     const [canvas, setCanvas] = useState({
         brushColor: '#000000',
         lineWidth: 4,
@@ -30,10 +29,24 @@ const Game = props => {
         clear: false
     });
     const [hubConnection] = useState(props.hubConnection);
+    const [toDraw, setToDraw] = useState(null);
+    const [isPainter, setIsPainter] = useState(false);
+
+
+    const sendDrawObjects = async () => {
+        if (objToSend.length > 0){
+            const temp = objToSend;
+            objToSend = [];
+            console.log('send: ' + temp.length);
+            await ApiFactory.draw({token: state.playerId, gamecode: state.gamecode, drawObjects: temp}); // make it not send every draw command
+        }
+    };
 
     useEffect(() => {
         onNewRound = drawer => {
             console.log('onNewRound: ' + drawer);
+            objToSend = [];
+            setToDraw([{clear: true}]);
             setState(oState => {
                 const newP = {...(oState.players.find(p => p.username === drawer))};
                 newP.state = 1;
@@ -42,6 +55,10 @@ const Game = props => {
                 const newState = {...oState, word: null, players: newPlayers};
                 return newState;
             })
+            if(drawer === state.user)
+                setIsPainter(true);
+            else
+                setIsPainter(false);
         };
         onMakePainter = word => {
             console.log('onMakePainter: ' + word);
@@ -50,19 +67,25 @@ const Game = props => {
                 return newState;
             })
         };
-        onGuessCorrect = drawer => {
+        onGuessCorrect = user => {
             setState(oState => {
-                const newP = {...(oState.players.find(p => p.username === drawer))};
-                newP.state = 2;
-                newP.score++;
-                const newPlayers = [...(oState.players.filter(p => p.username !== drawer).map(p => {return {...p, state: 0}}))];
-                newPlayers.push(newP);
-                const newState = {...oState, word: null, players: newPlayers};
-                return newState;
+                const newP = {...(oState.players.find(p => p.username === user))};
+                if(newP.state !== 2){
+                    newP.state = 2;
+                    newP.score++;
+                    const newPlayers = [...(oState.players.filter(p => p.username !== user).map(p => {return {...p}}))];
+                    newPlayers.push(newP);
+                    const newState = {...oState, word: null, players: newPlayers};
+                    return newState;
+                }
+                return oState;
             })
         };
         onDraw = draw => {
-            console.log(draw);
+            if (!isPainter){
+                console.log('draw: ' + draw.length);
+                setToDraw(draw);
+            }
         };
     }, []);
 
@@ -74,6 +97,15 @@ const Game = props => {
         hubConnection.on('draw', (drawList) => { onDraw(drawList); });
     }, [])
 
+
+    useEffect(() => {
+        const interval = window.setInterval(async () => {
+            if (isPainter){
+                sendDrawObjects();
+            }
+        }, 2000)
+    }, [isPainter])
+
     const users = state.players.map((p) => {
         return{
             name: p.username,
@@ -83,11 +115,15 @@ const Game = props => {
     });
 
     const onGuessMade = async (guess) => {
-        await ApiFactory.guess({guess});
+        await ApiFactory.guess({guess: guess, gamecode: state.gamecode, token: state.playerId});
     };
 
-    const onRegisterDraw = async (drawObj) => {
-        await ApiFactory.draw({token: state.playerId, gamecode: state.gamecode, drawObjects: drawObj}); // make it not send every draw command
+    const onRegisterDraw = drawObj => {
+        objToSend.push(drawObj);
+    }
+
+    const onResetToDraw = () => {
+        setToDraw(null);
     }
 
     return (
@@ -95,7 +131,7 @@ const Game = props => {
             <Button type='Warning'><h4>EXIT GAME</h4></Button>
             <ScoreBoard users={users}/>
             <div style={{width: '400px', height: '400px', backgroundColor: 'white', border: '1px solid black'}}>
-                <Canvas isPainter={state.isPainter} registerDraw={onRegisterDraw} {...canvas} toDraw={state.movesToDraw}/>
+                <Canvas isPainter={isPainter} registerDraw={onRegisterDraw} clearToDraw={onResetToDraw} {...canvas} toDraw={toDraw}/>
             </div>
             <Guesser onGuessMade={onGuessMade}></Guesser>
             {state.word ? <p>WORD TO DRAW: {state.word}</p>: null}

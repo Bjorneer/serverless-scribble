@@ -4,11 +4,10 @@ export const baseUrl = 'http://localhost:7071/api'
 export const APIUrls = {
     create: '/create',
     join: '/join',
-    startGame: '/start',
     guess: '/guess',
     draw: '/draw',
-    leaveGroup: '/joinGroup',
-    joinGroup: '/leaveGroup',
+    joinGroup: '/joinGroup',
+    leaveGroup: '/leaveGroup',
     negotiate: '/negotiate',
     start: '/start'
 };

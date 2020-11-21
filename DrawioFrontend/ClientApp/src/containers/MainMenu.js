@@ -3,7 +3,7 @@ import MainForm from './MainForm';
 import Lobby from '../components/Lobby';
 import classes from './css/MainMenu.module.css';
 import TitleLogo from '../components/ui/TitleLogo';
-import { ApiFactory, baseUrl } from '../Helpers/Api';
+import { ApiFactory } from '../Helpers/Api';
 import * as signlaR from '@microsoft/signalr';
 
 let onUserJoined;

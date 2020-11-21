@@ -42,7 +42,7 @@ namespace Scribble.Functions.Functions
             if (status.RuntimeStatus != OrchestrationRuntimeStatus.Running)
                 return new BadRequestResult();
 
-            await client.RaiseEventAsync(data.GameCode, "Draw", data);
+            await client.RaiseEventAsync("g" + data.GameCode, "Draw", data);
 
             return new OkResult();
         }
@@ -54,7 +54,7 @@ namespace Scribble.Functions.Functions
             [DurableClient] IDurableOrchestrationClient client)
         {
             string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
-            var data = JsonConvert.DeserializeObject<DrawRequest>(requestBody);
+            var data = JsonConvert.DeserializeObject<GuessRequest>(requestBody);
 
             if (data.GameCode == null)
                 return new BadRequestResult();
@@ -67,7 +67,7 @@ namespace Scribble.Functions.Functions
             if (status.RuntimeStatus != OrchestrationRuntimeStatus.Running)
                 return new BadRequestResult();
 
-            await client.RaiseEventAsync(data.GameCode, "Guess", data);
+            await client.RaiseEventAsync("g" + data.GameCode, "Guess", data);
 
             return new OkResult();
         }

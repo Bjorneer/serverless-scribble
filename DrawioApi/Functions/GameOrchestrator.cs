@@ -24,7 +24,7 @@ namespace Scribble.Functions.Functions
             string roundWord = "Test"; // make some api call to that creates random noun
             string painterId = game.Players.FirstOrDefault()?.ID; // take random player instead of first
 
-            await context.CallActivityAsync("GameOrchestrator_StartNewRound", new Tuple<string,string>(game.Players.First(p => p.ID == painterId).UserName, context.InstanceId));
+            await context.CallActivityAsync("GameOrchestrator_StartNewRound", new Tuple<string,string>(game.Players.First(p => p.ID == painterId).UserName, game.GameCode));
 
             await context.CallActivityAsync("GameOrchestrator_MakePainter", new Tuple<string, string>(roundWord, painterId));
 
@@ -41,14 +41,14 @@ namespace Scribble.Functions.Functions
                 if (task == drawEvent)
                 {
                     if (painterId == drawEvent.Result.PlayerID)
-                        await context.CallActivityAsync("GameOrchestrator_Draw", new Tuple<List<DrawObject>, string>(drawEvent.Result.DrawObjects, context.InstanceId));
+                        await context.CallActivityAsync("GameOrchestrator_Draw", new Tuple<List<DrawObject>, string>(drawEvent.Result.DrawObjects, game.GameCode));
 
                     drawEvent = context.WaitForExternalEvent<DrawRequest>("Draw");
                 }
                 else if (task == guessEvent)
                 {
                     if (guessEvent.Result.Guess.ToLower() == roundWord.ToLower() && painterId != guessEvent.Result.PlayerID && game.Players.Any(p => p.ID == guessEvent.Result.PlayerID))
-                        await context.CallActivityAsync("GameOrchestrator_CorrectGuess", new Tuple<string, string>(game.Players.First(p => p.ID == guessEvent.Result.PlayerID).UserName, context.InstanceId));
+                        await context.CallActivityAsync("GameOrchestrator_CorrectGuess", new Tuple<string, string>(game.Players.First(p => p.ID == guessEvent.Result.PlayerID).UserName, game.GameCode));
 
                     guessEvent = context.WaitForExternalEvent<GuessRequest>("Guess");
                 }
@@ -70,7 +70,7 @@ namespace Scribble.Functions.Functions
         {
             return signalRMessages.AddAsync(new SignalRMessage
             {
-                //GroupName = tuple.Item2,
+                GroupName = tuple.Item2,
                 Target = "newRound",
                 Arguments = new[] { tuple.Item1 }
             });
@@ -94,7 +94,7 @@ namespace Scribble.Functions.Functions
         {
             return signalRMessages.AddAsync(new SignalRMessage
             {
-                //GroupName = tuple.Item2,
+                GroupName = tuple.Item2,
                 Target = "guessCorrect",
                 Arguments = new[] { tuple.Item1 }
             });
@@ -107,7 +107,7 @@ namespace Scribble.Functions.Functions
         {
             return signalRMessages.AddAsync(new SignalRMessage
             {
-                //GroupName = tuple.Item2,
+                GroupName = tuple.Item2,
                 Target = "draw",
                 Arguments = new[] { tuple.Item1 }
             });

@@ -66,8 +66,8 @@ namespace Scribble.Functions.Functions
             {
                 GameCode = gamecode,
                 Players = new List<SlimPlayer> { new SlimPlayer { UserName = player.UserName } },
-                Started = false,
-                PlayerID = player.ID
+                PlayerID = player.ID,
+                User = data.UserName
             };
             return new OkObjectResult(response);
         }
@@ -111,8 +111,8 @@ namespace Scribble.Functions.Functions
             {
                 GameCode = data.GameCode,
                 Players = players.Select(p => new SlimPlayer { UserName = p.UserName }).ToList(),
-                Started = false,
-                PlayerID = player.ID
+                PlayerID = player.ID,
+                User = data.UserName
             };
 
             return new OkObjectResult(response);

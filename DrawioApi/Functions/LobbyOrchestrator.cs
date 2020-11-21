@@ -57,7 +57,7 @@ namespace Scribble.Functions.Functions
         {
             return signalRMessages.AddAsync(new SignalRMessage
             {
-                //GroupName = req.GameCode,
+                GroupName = req.GameCode,
                 Target = "userJoined",
                 Arguments =  new[] { req.UserName }
             });
@@ -70,7 +70,7 @@ namespace Scribble.Functions.Functions
         {
             return signalRMessages.AddAsync(new SignalRMessage
             {
-                //GroupName = instanceId,
+                GroupName = instanceId,
                 Target = "gameStarted",
                 Arguments = new object[0]
             });
