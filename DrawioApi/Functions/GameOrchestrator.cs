@@ -14,15 +14,20 @@ namespace Scribble.Functions.Functions
 {
     public static class GameOrchestrator
     {
+        private static Random _random = new Random();
+
+
         [FunctionName("GameOrchestrator")]
         public static async Task RunOrchestrator(
-            [OrchestrationTrigger] IDurableOrchestrationContext context)
+            [OrchestrationTrigger] IDurableOrchestrationContext context) // consider moving events except timer out of orchestrator to stop it from starting all the time
         {
 
             var game = context.GetInput<Game>();
 
-            string roundWord = "Test"; // make some api call to that creates random noun
-            string painterId = game.Players.FirstOrDefault()?.ID; // take random player instead of first
+            string[] _words = "Arrow,Panda,Ribs,Bermudas,Oil,Belt,Cheese,Desk,Legs,Air Conditioner,Shark,Rasp Berries,Bear,Hands,Fan,Chairs,Peacock,Cap,Suit,Ostrich,Pen drive".Split(',');
+
+            string roundWord = _words[await context.CallActivityAsync<int>("GameOrchestrator_Random", _words.Length)];
+            string painterId = game.Players[await context.CallActivityAsync<int>("GameOrchestrator_Random", game.Players.Count)].ID;
 
             await context.CallActivityAsync("GameOrchestrator_StartNewRound", new Tuple<string,string>(game.Players.First(p => p.ID == painterId).UserName, game.GameCode));
 
@@ -65,7 +70,7 @@ namespace Scribble.Functions.Functions
         }
 
         [FunctionName("GameOrchestrator_StartNewRound")]
-        public static Task StartNewRound([ActivityTrigger] Tuple<string, string> tuple, ILogger log,
+        public static Task StartNewRound([ActivityTrigger] Tuple<string, string> tuple,
             [SignalR(HubName = "game")] IAsyncCollector<SignalRMessage> signalRMessages)
         {
             return signalRMessages.AddAsync(new SignalRMessage
@@ -77,7 +82,7 @@ namespace Scribble.Functions.Functions
         }
 
         [FunctionName("GameOrchestrator_MakePainter")]
-        public static Task MakePainter([ActivityTrigger] Tuple<string, string> tuple, ILogger log,
+        public static Task MakePainter([ActivityTrigger] Tuple<string, string> tuple,
             [SignalR(HubName = "game")] IAsyncCollector<SignalRMessage> signalRMessages)
         {
             return signalRMessages.AddAsync(new SignalRMessage
@@ -89,7 +94,7 @@ namespace Scribble.Functions.Functions
         }
 
         [FunctionName("GameOrchestrator_CorrectGuess")]
-        public static Task CorrectGuess([ActivityTrigger] Tuple<string, string> tuple, ILogger log,
+        public static Task CorrectGuess([ActivityTrigger] Tuple<string, string> tuple,
             [SignalR(HubName = "game")] IAsyncCollector<SignalRMessage> signalRMessages)
         {
             return signalRMessages.AddAsync(new SignalRMessage
@@ -102,7 +107,7 @@ namespace Scribble.Functions.Functions
 
         [FunctionName("GameOrchestrator_Draw")]
 
-        public static Task Draw([ActivityTrigger] Tuple<List<DrawObject>, string> tuple, ILogger log,
+        public static Task Draw([ActivityTrigger] Tuple<List<DrawObject>, string> tuple,
             [SignalR(HubName = "game")] IAsyncCollector<SignalRMessage> signalRMessages)
         {
             return signalRMessages.AddAsync(new SignalRMessage
@@ -112,5 +117,15 @@ namespace Scribble.Functions.Functions
                 Arguments = new[] { tuple.Item1 }
             });
         }
+
+        [FunctionName("GameOrchestrator_Random")]
+
+        public static int Random([ActivityTrigger] int max)
+        {
+            return _random.Next(0, max);
+        }
+
+
+
     }
 }
