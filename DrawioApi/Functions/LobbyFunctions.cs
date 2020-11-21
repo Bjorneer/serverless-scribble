@@ -48,8 +48,8 @@ namespace Scribble.Functions.Functions
             {
                 GameCode = gamecode,
                 OwnerID = player.ID,
-                RoundsLeft = 3,
-                SecondsPerRound = 20, 
+                RoundsLeft = 8,
+                SecondsPerRound = 30, 
                 Players = new List<Player>(new[] { player })
             };
             try

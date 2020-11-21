@@ -128,11 +128,17 @@ const Game = props => {
 
     return (
         <div>
-            <Button type='Warning'><h4>EXIT GAME</h4></Button>
-            <ScoreBoard users={users}/>
-            <div style={{width: '400px', height: '400px', backgroundColor: 'white', border: '1px solid black'}}>
-                <Canvas isPainter={isPainter} registerDraw={onRegisterDraw} clearToDraw={onResetToDraw} {...canvas} toDraw={toDraw}/>
+            <div>
+                <div style={{display: 'inline-block', verticalAlign: 'top'}}>
+                    <Button type='Warning'><h4>EXIT GAME</h4></Button>
+                    <ScoreBoard users={users} />
+                </div>
+                <div style={{width: '800px', height: '800px', backgroundColor: 'white', border: '1px solid black', display: 'inline-block', verticalAlign: 'top'}}>
+                    <Canvas isPainter={isPainter} registerDraw={onRegisterDraw} clearToDraw={onResetToDraw} {...canvas} toDraw={toDraw}/>
+                </div>
             </div>
+            
+            
             <Guesser onGuessMade={onGuessMade}></Guesser>
             {state.word ? <p>WORD TO DRAW: {state.word}</p>: null}
         </div>

@@ -4,7 +4,6 @@ import Game from './Game';
 import { useHistory } from "react-router-dom";
 import { Switch, Route } from 'react-router-dom';
 import classes from './css/Layout.module.css';
-import Footer from '../components/Footer';
 
 
 const Layout = () => {
@@ -28,7 +27,6 @@ const Layout = () => {
           <Route path='/' render={() => <MainMenu gameStarting={onGameStarting}/>} />
         </Switch>
       </div>
-      <Footer />
     </>
 
 

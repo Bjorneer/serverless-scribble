@@ -1,5 +1,5 @@
 
-export const baseUrl = 'http://localhost:7071/api'
+export const baseUrl = 'https://scribble-functions.azurewebsites.net/api'
 
 export const APIUrls = {
     create: '/create',
@@ -13,6 +13,7 @@ export const APIUrls = {
 };
 
 const postRequest = (url, data, options) => {
+    headers = {};
     return fetch(baseUrl + url, {
         method: 'POST',
         mode: 'cors',

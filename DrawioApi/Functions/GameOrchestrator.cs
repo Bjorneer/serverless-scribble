@@ -24,7 +24,7 @@ namespace Scribble.Functions.Functions
 
             var game = context.GetInput<Game>();
 
-            string[] _words = "Arrow,Panda,Ribs,Bermudas,Oil,Belt,Cheese,Desk,Legs,Air Conditioner,Shark,Rasp Berries,Bear,Hands,Fan,Chairs,Peacock,Cap,Suit,Ostrich,Pen drive".Split(',');
+            string[] _words = "Arrow,Panda,Ribs,Banana,Oil,Belt,Cheese,Desk,Legs,Air Conditioner,Shark,Rasp Berries,Bear,Hands,Fan,Chairs,Bird,Cap,Suit,Ostrich,Skyscraper".Split(',');
 
             string roundWord = _words[await context.CallActivityAsync<int>("GameOrchestrator_Random", _words.Length)];
             string painterId = game.Players[await context.CallActivityAsync<int>("GameOrchestrator_Random", game.Players.Count)].ID;
