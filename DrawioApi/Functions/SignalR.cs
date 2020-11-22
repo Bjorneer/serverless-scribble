@@ -1,9 +1,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.Azure.WebJobs;
-using Microsoft.Azure.WebJobs.Extensions.DurableTask;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Azure.WebJobs.Extensions.SignalRService;
-using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace Scribble.Functions.Functions
@@ -17,11 +15,9 @@ namespace Scribble.Functions.Functions
         {
             return connectionInfo;
         }
-        //https://charliedigital.com/2019/09/02/azure-functions-signalr-and-authorization/
-        //https://docs.microsoft.com/en-us/azure/azure-functions/functions-bindings-signalr-service-output?tabs=csharp
-        //https://docs.microsoft.com/en-us/azure/azure-signalr/signalr-concept-serverless-development-config
+
         [FunctionName("joinGroup")]
-        public static Task JoinGroup( // call from client
+        public static Task JoinGroup( 
             [HttpTrigger(AuthorizationLevel.Anonymous, "post")] HttpRequest req,
             [SignalR(HubName = "game")] IAsyncCollector<SignalRGroupAction> signalRGroupActions)
         {

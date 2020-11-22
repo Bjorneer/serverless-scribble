@@ -1,9 +1,6 @@
 ﻿using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
-namespace DrawioFunctions.Requests
+namespace Scribble.Functions.Requests
 {
     public class JoinRequest
     {
@@ -11,6 +8,6 @@ namespace DrawioFunctions.Requests
         public string UserName { get; set; }
 
         [JsonProperty(PropertyName = "gamecode")]
-        public string GameCode{ get; set; }
+        public string GameCode { get; set; }
     }
 }

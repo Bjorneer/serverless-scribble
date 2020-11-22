@@ -1,9 +1,6 @@
 ﻿using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
-namespace DrawioFunctions.Requests
+namespace Scribble.Functions.Requests
 {
     public class GuessRequest
     {
@@ -13,7 +10,7 @@ namespace DrawioFunctions.Requests
         [JsonProperty(PropertyName = "gamecode")]
         public string GameCode { get; set; }
 
-        [JsonProperty(PropertyName ="guess")]
+        [JsonProperty(PropertyName = "guess")]
         public string Guess { get; set; }
     }
 }

@@ -1,14 +1,9 @@
-using System.Collections.Generic;
-using System.Net.Http;
-using System.Threading.Tasks;
-using DrawioFunctions.Models;
-using DrawioFunctions.Requests;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.DurableTask;
-using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Azure.WebJobs.Extensions.SignalRService;
-using Microsoft.Azure.WebJobs.Host;
-using Microsoft.Extensions.Logging;
+using Scribble.Functions.Models;
+using Scribble.Functions.Requests;
+using System.Threading.Tasks;
 
 namespace Scribble.Functions.Functions
 {
@@ -24,7 +19,7 @@ namespace Scribble.Functions.Functions
             var startGameEventTask = context.WaitForExternalEvent("Start");
 
             var joinGameEventTask = context.WaitForExternalEvent<Player>("Join");
-            
+
             while (true)
             {
                 var finishedTask = await Task.WhenAny(joinGameEventTask, startGameEventTask);
@@ -59,7 +54,7 @@ namespace Scribble.Functions.Functions
             {
                 GroupName = req.GameCode,
                 Target = "userJoined",
-                Arguments =  new[] { req.UserName }
+                Arguments = new[] { req.UserName }
             });
         }
 

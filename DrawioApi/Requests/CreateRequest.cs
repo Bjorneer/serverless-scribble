@@ -1,10 +1,6 @@
 ﻿using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Text;
 
-namespace DrawioFunctions.Requests
+namespace Scribble.Functions.Requests
 {
     public class CreateRequest
     {

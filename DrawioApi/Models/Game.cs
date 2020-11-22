@@ -1,9 +1,6 @@
-﻿using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Text.Json;
+﻿using System.Collections.Generic;
 
-namespace DrawioFunctions.Models
+namespace Scribble.Functions.Models
 {
     public class Game
     {

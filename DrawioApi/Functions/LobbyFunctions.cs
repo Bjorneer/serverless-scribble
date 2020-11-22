@@ -1,6 +1,3 @@
-using DrawioFunctions.Models;
-using DrawioFunctions.Requests;
-using DrawioFunctions.Responses;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
@@ -8,9 +5,10 @@ using Microsoft.Azure.WebJobs.Extensions.DurableTask;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Azure.WebJobs.Extensions.SignalRService;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Primitives;
 using Newtonsoft.Json;
-using Scribble.Functions.Functions;
+using Scribble.Functions.Models;
+using Scribble.Functions.Requests;
+using Scribble.Functions.Responses;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -35,7 +33,7 @@ namespace Scribble.Functions.Functions
 
             data.UserName = data.UserName.Replace(" ", "");
 
-            if (string.IsNullOrEmpty(data.UserName) || data.UserName.Length < 5 )
+            if (string.IsNullOrEmpty(data.UserName) || data.UserName.Length < 5)
                 return new BadRequestResult();
 
             var player = new Player
@@ -49,7 +47,7 @@ namespace Scribble.Functions.Functions
                 GameCode = gamecode,
                 OwnerID = player.ID,
                 RoundsLeft = 8,
-                SecondsPerRound = 30, 
+                SecondsPerRound = 30,
                 Players = new List<Player>(new[] { player })
             };
             try
@@ -75,7 +73,6 @@ namespace Scribble.Functions.Functions
         [FunctionName("join")]
         public static async Task<IActionResult> Join(
             [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = null)] HttpRequest req,
-            ILogger log,
             [DurableClient] IDurableOrchestrationClient client)
         {
             string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
@@ -94,7 +91,7 @@ namespace Scribble.Functions.Functions
 
             var status = await client.GetStatusAsync(data.GameCode);
 
-            if(status == null)
+            if (status == null)
                 return new NotFoundResult();
 
             if (status.RuntimeStatus != OrchestrationRuntimeStatus.Running)
@@ -127,7 +124,7 @@ namespace Scribble.Functions.Functions
             string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
             var data = JsonConvert.DeserializeObject<StartRequest>(requestBody);
 
-            if(data.GameCode == null || data.PlayerID == null)
+            if (data.GameCode == null || data.PlayerID == null)
                 return new BadRequestResult();
 
             var status = await client.GetStatusAsync(data.GameCode);
@@ -139,7 +136,7 @@ namespace Scribble.Functions.Functions
                 return new BadRequestResult();
 
             var game = status.CustomStatus.ToObject<Game>();
-            
+
             if (game.OwnerID != data.PlayerID)
                 return new BadRequestResult();
 

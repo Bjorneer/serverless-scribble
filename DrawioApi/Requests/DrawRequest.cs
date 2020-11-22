@@ -1,8 +1,8 @@
-﻿using DrawioFunctions.Models;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
+using Scribble.Functions.Models;
 using System.Collections.Generic;
 
-namespace DrawioFunctions.Requests
+namespace Scribble.Functions.Requests
 {
     public class DrawRequest
     {

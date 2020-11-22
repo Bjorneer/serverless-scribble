@@ -1,10 +1,7 @@
-﻿using DrawioFunctions.Models;
-using Newtonsoft.Json;
-using System;
+﻿using Newtonsoft.Json;
 using System.Collections.Generic;
-using System.Text;
 
-namespace DrawioFunctions.Responses
+namespace Scribble.Functions.Responses
 {
     public class GameState
     {

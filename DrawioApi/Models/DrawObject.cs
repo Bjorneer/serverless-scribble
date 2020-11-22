@@ -1,9 +1,6 @@
 ﻿using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
-namespace DrawioFunctions.Models
+namespace Scribble.Functions.Models
 {
     public class DrawObject
     {
