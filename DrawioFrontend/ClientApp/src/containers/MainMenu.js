@@ -5,14 +5,15 @@ import classes from './css/MainMenu.module.css';
 import TitleLogo from '../components/ui/TitleLogo';
 import { ApiFactory } from '../Helpers/Api';
 import * as signlaR from '@microsoft/signalr';
+import Backdrop from '../components/ui/Backdrop';
 
 let onUserJoined;
 let onGameStarted;
 
 const MainMenu = props => {
-    const [isInLobby, setIsInLobby] = useState(false);
-    const [gameState, setGameState] = useState(null);
-    const [isLobbyLeader, setIsLobbyLeader] = useState(false);
+    const [isInLobby, setIsInLobby] = useState(false);//useState(true);//
+    const [gameState, setGameState] = useState(null);//useState({gamecode: '123ABC', players: [{username: 'hello'}, {username: 'carl'}, {username: 'marting'}, , {username: 'Filip'}, , {username: 'verygoodpainter'}, , {username: 'testing'}]})//
+    const [isLobbyLeader, setIsLobbyLeader] = useState(true);
     const [hubConnection, SetHubConnection] = useState(null);
 
     useEffect(() => {
@@ -140,17 +141,17 @@ const MainMenu = props => {
             .catch(err => console.log(err));
     };
 
-    let form = null;
-    if(!isInLobby){
-        form = <MainForm onJoinGame={onJoinGameHandler} onCreateGame={onCreateNewGameHandler} />;
-    }
-    
     return (
-        <div className={classes.MainMenu}>
-            <TitleLogo />
-            {form}  
-            {isInLobby ? <Lobby isOwner={isLobbyLeader} players={gameState ? gameState.players : null} startGame={onGameStartHandler} lobbyCode={gameState.gamecode}/> : null}
+        <div style={{textAlign:'center'}}>
+            <div className={classes.MainMenu}>
+                <TitleLogo />
+                {isInLobby ? 
+                    <Lobby isOwner={isLobbyLeader} players={gameState ? gameState.players : null} startGame={onGameStartHandler} lobbyCode={gameState.gamecode}/> : 
+                    <MainForm onJoinGame={onJoinGameHandler} onCreateGame={onCreateNewGameHandler} />}
+            </div>
+            <Backdrop show/>
         </div>
+
     );
 };
 

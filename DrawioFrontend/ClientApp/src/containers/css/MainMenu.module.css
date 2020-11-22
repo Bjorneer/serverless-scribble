@@ -1,14 +1,11 @@
 .MainMenu {
-    width           : 800px;
-    height          : 800px;
-    background-color: red;
-    background-image: linear-gradient(to bottom right, orange, yellow);
-    border          : 2px solid #999;
-    margin          : auto;
+    background-color: white;
     text-align      : center;
-    box-shadow      : 10px 10px 10px;
-}
-
-.MainMenu>h1 {
-    font-size: 50px;
+    display: inline-block;
+    padding: 30px;
+    margin-top: 5%;
+    -webkit-border-radius: 30px;
+    border-radius: 30px;
+    z-index: 200;
+    position: relative;
 }

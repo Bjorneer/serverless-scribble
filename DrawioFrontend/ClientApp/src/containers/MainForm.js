@@ -67,7 +67,6 @@ const MainForm = props => {
             onChange={(e) => onInputChangedHandler(e, element)} ></Input>)
     }
     return (
-        <>
             <form onSubmit={props.onSubmit}>
                 {form}
                 <Button 
@@ -81,7 +80,6 @@ const MainForm = props => {
                     onClick={(e) => props.onJoinGame(e, mainForm.gameCode.value, mainForm.username.value) }>Join Game
                 </Button>
             </form>
-        </>
     );
 
 };

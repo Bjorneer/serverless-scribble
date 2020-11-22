@@ -3,6 +3,9 @@
     border:2px solid #ccc; 
     -webkit-border-radius: 5px;
     border-radius: 5px;
+    width: 80%;
+    margin-top: 10px;
+    font-size: large;
 }
 
 .InputText:focus {

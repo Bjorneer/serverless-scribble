@@ -6,6 +6,7 @@ import registerServiceWorker from './registerServiceWorker';
 
 const baseUrl = document.getElementsByTagName('base')[0].getAttribute('href');
 const rootElement = document.getElementById('root');
+document.title = "Scribble"
 
 ReactDOM.render(
   <BrowserRouter basename={baseUrl}>

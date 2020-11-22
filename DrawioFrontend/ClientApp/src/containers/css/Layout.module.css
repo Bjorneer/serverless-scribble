@@ -1,7 +1,6 @@
 .Layout {
-    background-color: lightgreen;
-    background-image: radial-gradient(circle at top, green 10%, lightgreen 80%, white);
     width           : 100%;
-    height          : 100%;
-
+    height          : 100vh;
+    background-image: url('../../assets/Background.png');
+    background-color: white;
 }

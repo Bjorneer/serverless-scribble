@@ -1,8 +1,13 @@
 import React from 'react';
+import classes from './css/TitleLogo.module.css';
 
 const TitleLogo = () => {
     return (
-        <h1>Draw that thing!</h1>
+        <>
+            <div className={classes.Title}>
+                Serverless Scribble
+            </div>
+        </>
     );
 };
 

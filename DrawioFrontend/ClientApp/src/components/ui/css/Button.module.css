@@ -1,21 +1,66 @@
+
 .Button {
-    color        : white;
-    border-radius: 4px;
-    text-shadow  : 0 1px 1px rgba(0, 0, 0, 0.2);
+	border-radius:18px;
+	display:inline-block;
+	cursor:pointer;
+	color:#ffffff;
+	font-family:Arial;
+	font-size:14px;
+	padding:7px 15px;
+	text-decoration:none;
+    outline: none;
+    margin: 10px;
 }
 
 .Success {
-    background: rgb(28, 184, 65);
+	background:linear-gradient(to bottom, #44c767 5%, #5cbf2a 100%);
+    background-color:#44c767;
+    text-shadow:0px 1px 0px darkgreen;
+    border:1px solid #18ab29;
+	box-shadow: 3px 4px 0px 0px #3dc21b;
+}
+
+.Success:hover {
+	background:linear-gradient(to bottom, #5cbf2a 5%, #44c767 100%);
+	background-color:#5cbf2a;
 }
 
 .Error {
-    background: rgb(202, 60, 60);
+    background:linear-gradient(to bottom, #CA3C3C 5%, #DB4040 100%);
+    background-color:#CA3C3C;
+    text-shadow:0px 1px 0px darkred;
+    border:1px solid #18ab29;
+	box-shadow: 3px 4px 0px 0px #3dc21b;
+}
+
+.Error:hover {
+    background:linear-gradient(to bottom, #DB4040 5%, #CA3C3C 100%);
+	background-color:#DB4040;
 }
 
 .Warning {
-    background: rgb(223, 117, 20);
+    background:linear-gradient(to bottom, #D57514 5%, #E48220 100%);
+    background-color:#D57514;
+    text-shadow:0px 1px 0px darkorange;
+    border:1px solid #18ab29;
+	box-shadow: 3px 4px 0px 0px #3dc21b;
+}
+
+.Warning:hover {
+    background:linear-gradient(to bottom, #E48220 5%, #D57514 100%);
+	background-color:#E48220;
 }
 
 .Secondary {
-    background: rgb(66, 184, 221);
+	background:linear-gradient(to bottom, #33ADD2 5%, #42B8DD 100%);
+    background-color:#33ADD2;
+    text-shadow:0px 1px 0px darkblue;
+    border:1px solid #27b0d8;
+	box-shadow: 3px 4px 0px 0px #2bafd9;
+
+}
+
+.Secondary:hover {
+	background:linear-gradient(to bottom, #42B8DD 5%, #33ADD2 100%);
+	background-color:#42B8DD;
 }

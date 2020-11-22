@@ -4,14 +4,13 @@ import Game from './Game';
 import { useHistory } from "react-router-dom";
 import { Switch, Route } from 'react-router-dom';
 import classes from './css/Layout.module.css';
+import Footer from '../components/ui/Footer';
 
 
 const Layout = () => {
   const [gameState, setGameState] = useState(null);
   const [hubConnection, setHubConnection] = useState(null);
   const history = useHistory();
-
-
 
   const onGameStarting = (gamestate, hubConnection) => {
       setGameState(gamestate);
@@ -26,6 +25,7 @@ const Layout = () => {
           <Route exact path='/game' render={() => <Game gameState={gameState} hubConnection={hubConnection}/>} />
           <Route path='/' render={() => <MainMenu gameStarting={onGameStarting}/>} />
         </Switch>
+        <Footer />
       </div>
     </>
 
