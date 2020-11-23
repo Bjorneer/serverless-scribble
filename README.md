@@ -1,2 +1,2 @@
 # serverless-scribble
-![alt text](https://github.com/Bjorneer/serverless-scribble/blob/master/DrawThatThing.vpd.png?raw=true)
+![alt text](https://github.com/Bjorneer/serverless-scribble/blob/master/Assets/DrawThatThing.vpd.png?raw=true)
