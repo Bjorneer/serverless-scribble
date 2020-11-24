@@ -4,7 +4,6 @@
     font-weight: bold;
     border-radius: 8px;
     margin-top: 5px;
-
     background-color: rgba(150,150,150, 0.8);
     background-image: linear-gradient(to right,  rgba(150,150,150, 0.8), white);
 }

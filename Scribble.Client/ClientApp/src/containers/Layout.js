@@ -5,12 +5,19 @@ import { useHistory } from "react-router-dom";
 import { Switch, Route } from 'react-router-dom';
 import classes from './css/Layout.module.css';
 import Footer from '../components/ui/Footer';
+import Backdrop from '../components/ui/Backdrop';
 
 
 const Layout = () => {
   const [gameState, setGameState] = useState(null);
   const [hubConnection, setHubConnection] = useState(null);
   const history = useHistory();
+
+  const onExitGame = () => {
+    setGameState(null);
+    setHubConnection(null); // maybe close connection first if exists
+    history.push('/');
+  };
 
   const onGameStarting = (gamestate, hubConnection) => {
       setGameState(gamestate);
@@ -22,10 +29,11 @@ const Layout = () => {
     <>
       <div className={classes.Layout}>
         <Switch>
-          <Route exact path='/game' render={() => <Game gameState={gameState} hubConnection={hubConnection}/>} />
+          <Route exact path='/game' render={() => <Game gameState={gameState} hubConnection={hubConnection} exit={onExitGame}/>} />
           <Route path='/' render={() => <MainMenu gameStarting={onGameStarting}/>} />
         </Switch>
         <Footer />
+        <Backdrop show/>
       </div>
     </>
 
@@ -33,5 +41,7 @@ const Layout = () => {
 
   );
 };
+
+
 
 export default Layout;

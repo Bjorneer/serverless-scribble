@@ -5,7 +5,6 @@ import classes from './css/MainMenu.module.css';
 import TitleLogo from '../components/ui/TitleLogo';
 import { ApiFactory } from '../Helpers/Api';
 import * as signlaR from '@microsoft/signalr';
-import Backdrop from '../components/ui/Backdrop';
 
 let onUserJoined;
 let onGameStarted;
@@ -149,7 +148,6 @@ const MainMenu = props => {
                     <Lobby isOwner={isLobbyLeader} players={gameState ? gameState.players : null} startGame={onGameStartHandler} lobbyCode={gameState.gamecode}/> : 
                     <MainForm onJoinGame={onJoinGameHandler} onCreateGame={onCreateNewGameHandler} />}
             </div>
-            <Backdrop show/>
         </div>
 
     );

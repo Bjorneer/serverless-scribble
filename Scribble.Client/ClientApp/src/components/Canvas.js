@@ -158,7 +158,7 @@ class Canvas extends React.Component {
   canvasStyle(){
     const defaults = Canvas.getDefaultStyle();
     const custom = this.props.canvasStyle;
-
+    
     return assign({}, defaults, custom);
   }
   

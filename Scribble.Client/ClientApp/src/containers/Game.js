@@ -1,11 +1,11 @@
 ﻿import React, {useState, useEffect} from 'react';
 import Canvas from '../components/Canvas';
-import Guesser from '../components/Guesser';
-import ScoreBoard from '../components/ScoreBoard';
-import Button from '../components/ui/Button';
+import GameControls from '../components/GameControls';
+import {useHistory} from 'react-router-dom';
 import { ApiFactory } from '../Helpers/Api';
+import classes from './css/Game.module.css';
 
-const USER_TYPES = [
+export const USER_TYPES = [
     '',
     'Painter',
     'Accepted'
@@ -19,7 +19,7 @@ let onDraw;
 let objToSend = [];
 
 const Game = props => {
-    const [state, setState] = useState({...props.gameState, players: props.gameState.players.map(p => {return {...p, state: 0}})});//useState({word: 'cat', isPainter: true, players: [{username: 'Alfred', score: 100, state: 1}]})
+    const [state, setState] = useState({word: 'cat', isPainter: true, players: [{username: 'Alfred', score: 100, state: 1}, {username: 'Mattias', score: 100, state: 0}, {username: 'Filip', score: 100, state: 2}]})//useState({...props.gameState, players: props.gameState.players.map(p => {return {...p, state: 0}})});//
     const [canvas, setCanvas] = useState({
         brushColor: '#000000',
         lineWidth: 4,
@@ -31,6 +31,7 @@ const Game = props => {
     const [hubConnection] = useState(props.hubConnection);
     const [toDraw, setToDraw] = useState(null);
     const [isPainter, setIsPainter] = useState(false);
+    const history = useHistory();
 
 
     const sendDrawObjects = async () => {
@@ -90,11 +91,13 @@ const Game = props => {
     }, []);
 
     useEffect(() => {
-        hubConnection.off();
-        hubConnection.on('newRound', (painterName) => { onNewRound(painterName); });
-        hubConnection.on('makePainter', (word) => { onMakePainter(word); });
-        hubConnection.on('guessCorrect', (name) => { onGuessCorrect(name); });
-        hubConnection.on('draw', (drawList) => { onDraw(drawList); });
+        if(hubConnection !== null){
+            hubConnection.off();
+            hubConnection.on('newRound', (painterName) => { onNewRound(painterName); });
+            hubConnection.on('makePainter', (word) => { onMakePainter(word); });
+            hubConnection.on('guessCorrect', (name) => { onGuessCorrect(name); });
+            hubConnection.on('draw', (drawList) => { onDraw(drawList); });
+        }
     }, [])
 
 
@@ -104,15 +107,12 @@ const Game = props => {
                 sendDrawObjects();
             }
         }, 2000)
+        return () => {
+            window.clearInterval(interval);
+        }
     }, [isPainter])
 
-    const users = state.players.map((p) => {
-        return{
-            name: p.username,
-            score: p.score,
-            type: USER_TYPES[p.state]
-        };
-    });
+
 
     const onGuessMade = async (guess) => {
         await ApiFactory.guess({guess: guess, gamecode: state.gamecode, token: state.playerId});
@@ -120,27 +120,20 @@ const Game = props => {
 
     const onRegisterDraw = drawObj => {
         objToSend.push(drawObj);
-    }
+    };
 
     const onResetToDraw = () => {
         setToDraw(null);
-    }
+    };
 
     return (
-        <div>
-            <div>
-                <div style={{display: 'inline-block', verticalAlign: 'top'}}>
-                    <Button type='Warning'><h4>EXIT GAME</h4></Button>
-                    <ScoreBoard users={users} />
-                </div>
-                <div style={{width: '800px', height: '800px', backgroundColor: 'white', border: '1px solid black', display: 'inline-block', verticalAlign: 'top'}}>
+        <div className={classes.Game}>
+            <GameControls players={state.players} guessMade={onGuessMade} word={state.word} exit={props.exit}/>
+            <div style={{textAlign: 'center', display: 'inline-block', width: '80%'}}>
+                <div style={{width: '800px', height: '800px', backgroundColor: 'white', border: '1px solid black', margin: '0 auto'}}>
                     <Canvas isPainter={isPainter} registerDraw={onRegisterDraw} clearToDraw={onResetToDraw} {...canvas} toDraw={toDraw}/>
                 </div>
             </div>
-            
-            
-            <Guesser onGuessMade={onGuessMade}></Guesser>
-            {state.word ? <p>WORD TO DRAW: {state.word}</p>: null}
         </div>
     );
 };

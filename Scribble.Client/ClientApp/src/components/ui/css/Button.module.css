@@ -26,15 +26,15 @@
 }
 
 .Error {
-    background:linear-gradient(to bottom, #CA3C3C 5%, #DB4040 100%);
+    background:linear-gradient(to bottom, #CA3C3C 5%, darkred 100%);
     background-color:#CA3C3C;
     text-shadow:0px 1px 0px darkred;
-    border:1px solid #18ab29;
-	box-shadow: 3px 4px 0px 0px #3dc21b;
+    border:1px solid #CA3C3C;
+	box-shadow: 3px 4px 0px 0px darkred;
 }
 
 .Error:hover {
-    background:linear-gradient(to bottom, #DB4040 5%, #CA3C3C 100%);
+    background:linear-gradient(to bottom, #DB4040 5%, darkred 100%);
 	background-color:#DB4040;
 }
 

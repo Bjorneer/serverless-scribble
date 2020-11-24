@@ -1,0 +1,15 @@
+.WordBox {
+    width: 100%;
+    border: 1px solid black;
+    border-radius: 5px;
+    box-sizing: border-box;
+    background-color: white;
+    font-weight: bold;
+    font-size: large;
+    text-align: center;
+}
+
+.Word{
+    font-size: 40px;
+    font-weight: bolder;
+}

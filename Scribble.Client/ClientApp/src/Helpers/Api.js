@@ -1,6 +1,5 @@
 
-//export const baseUrl = 'https://scribble-functions.azurewebsites.net/api'
-export const baseUrl = 'http://localhost:7071/api'
+export const baseUrl = process.env.REACT_APP_API_BASE_URL;
 
 export const APIUrls = {
     create: '/create',
@@ -20,10 +19,6 @@ const postRequest = (url, data, options) => {
         body: JSON.stringify(data),
         ...options
     });
-};
-
-const getRequest = (url) => {
-    return fetch(baseUrl + url);
 };
 
 export const ApiFactory = {

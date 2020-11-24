@@ -17,7 +17,7 @@ const Guesser = props => {
 
     return (
         <div className={classes.Guesser}>
-            <input onKeyUp={onKeyUp} value={input} onChange={(e) => handleChange(e)} placeholder='Enter here'/>
+            <input onKeyUp={onKeyUp} value={input} onChange={(e) => handleChange(e)} disabled={props.disabled} placeholder='Enter Guess'/>
         </div>
     )
 };

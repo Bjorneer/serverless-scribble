@@ -1,0 +1,17 @@
+.Game {
+    left: 0px;
+    position: relative;
+    animation: slideOnLoad 2s 1;
+    z-index: 200;
+}
+
+@keyframes slideOnLoad
+{
+    0% {opacity: 0;}
+    100% {left:100;}
+}
+@-webkit-keyframes slideOnLoad
+{
+    0% {opacity: 0;}
+    100% {opacity: 100;}
+}

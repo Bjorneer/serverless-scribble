@@ -19,7 +19,7 @@ const Button = (props) => {
         default:
             break;            
     }
-    return <button className={classes.Button + ' ' + secClass} onClick={props.onClick}>{props.children}</button>
+    return <button style={props.style} className={classes.Button + ' ' + secClass} onClick={props.onClick}>{props.children}</button>
 };
 
 export default Button;
