@@ -10,10 +10,11 @@ let onUserJoined;
 let onGameStarted;
 
 const MainMenu = props => {
-    const [isInLobby, setIsInLobby] = useState(false);//useState(true);//
-    const [gameState, setGameState] = useState(null);//useState({gamecode: '123ABC', players: [{username: 'hello'}, {username: 'carl'}, {username: 'marting'}, , {username: 'Filip'}, , {username: 'verygoodpainter'}, , {username: 'testing'}]})//
+    const [isInLobby, setIsInLobby] = useState(false);
+    const [gameState, setGameState] = useState(null);
+    //const [gameState, setGameState] = useState({gamecode: '123ABC', players: [{username: 'hello'}, {username: 'carl'}, {username: 'marting'}, , {username: 'Filip'}, , {username: 'verygoodpainter'}, , {username: 'testing'}]})//
     const [isLobbyLeader, setIsLobbyLeader] = useState(false);
-    const [hubConnection, SetHubConnection] = useState(null);
+    const [hubConnection, setHubConnection] = useState(null);
 
     useEffect(() => {
         onUserJoined = (username) => {
@@ -74,7 +75,7 @@ const MainMenu = props => {
                         }})
                         .then(res => console.log('Group joined'));
 
-                        SetHubConnection(hubConn);
+                        setHubConnection(hubConn);
                     })
                     .catch(err => console.error(err));
                 }
@@ -120,7 +121,7 @@ const MainMenu = props => {
                         }})
                         .then(res => console.log('Group joined'));
 
-                        SetHubConnection(hubConn);
+                        setHubConnection(hubConn);
                     })
                     .catch(err => console.error(err));
                 }
@@ -140,12 +141,19 @@ const MainMenu = props => {
             .catch(err => console.log(err));
     };
 
+    const onExitLobby = () => {
+        setGameState(null);
+        setIsInLobby(false);
+        setIsLobbyLeader(false);
+        setHubConnection(null);
+    };
+
     return (
         <div style={{textAlign:'center'}}>
             <div className={classes.MainMenu}>
                 <TitleLogo />
                 {isInLobby ? 
-                    <Lobby isOwner={isLobbyLeader} players={gameState ? gameState.players : null} startGame={onGameStartHandler} lobbyCode={gameState.gamecode}/> : 
+                    <Lobby isOwner={isLobbyLeader} players={gameState ? gameState.players : null} startGame={onGameStartHandler} lobbyCode={gameState.gamecode} onExit={onExitLobby}/> : 
                     <MainForm onJoinGame={onJoinGameHandler} onCreateGame={onCreateNewGameHandler} />}
             </div>
         </div>

@@ -21,7 +21,8 @@ let objToSend = [];
 
 
 const Game = props => {
-    const [state, setState] = useState({...props.gameState, players: props.gameState.players.map(p => {return {...p, state: 0}})});//useState({word: 'cat', isPainter: true, players: [{username: 'Alfred', score: 100, state: 1}, {username: 'Mattias', score: 100, state: 0}, {username: 'Filip', score: 100, state: 2}]})//////
+    //const [state, setState] = useState({...props.gameState, players: props.gameState.players.map(p => {return {...p, state: 0}})});
+    const [state, setState] = useState({ isPainter: true, players: [{username: 'Alfred', score: 100, state: 1}, {username: 'Mattias', score: 100, state: 0}, {username: 'Filip', score: 100, state: 2}]});
     const [canvas, setCanvas] = useState({
         brushColor: 'red',
         lineWidth: 10,

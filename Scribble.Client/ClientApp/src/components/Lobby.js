@@ -21,6 +21,7 @@ const Lobby = props => {
             </div>
             <div>
                 {props.isOwner ? <Button onClick={props.startGame} type='Secondary'>Start Game</Button> : null}
+                <Button type='Error' onClick={props.onExit}>Exit lobby</Button>
                 <div className={classes.GameCode}>
                     {props.lobbyCode}
                     <div style={{padding: '3px', textAlign:"center", display: 'inline-block'}}>

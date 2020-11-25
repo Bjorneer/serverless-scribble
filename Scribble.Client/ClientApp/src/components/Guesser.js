@@ -7,6 +7,7 @@ const Guesser = props => {
     const onKeyUp  = (event) => {
         if(event.keyCode === 13 && input.length > 0){
             event.preventDefault();
+            setInput('');
             props.onGuessMade(input);
         }
     };
