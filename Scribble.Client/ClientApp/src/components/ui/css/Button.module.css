@@ -42,8 +42,8 @@
     background:linear-gradient(to bottom, #D57514 5%, #E48220 100%);
     background-color:#D57514;
     text-shadow:0px 1px 0px darkorange;
-    border:1px solid #18ab29;
-	box-shadow: 3px 4px 0px 0px #3dc21b;
+    border:1px solid darkorange;
+	box-shadow: 3px 4px 0px 0px #E48220;
 }
 
 .Warning:hover {

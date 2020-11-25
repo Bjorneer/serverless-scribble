@@ -12,7 +12,7 @@ let onGameStarted;
 const MainMenu = props => {
     const [isInLobby, setIsInLobby] = useState(false);//useState(true);//
     const [gameState, setGameState] = useState(null);//useState({gamecode: '123ABC', players: [{username: 'hello'}, {username: 'carl'}, {username: 'marting'}, , {username: 'Filip'}, , {username: 'verygoodpainter'}, , {username: 'testing'}]})//
-    const [isLobbyLeader, setIsLobbyLeader] = useState(true);
+    const [isLobbyLeader, setIsLobbyLeader] = useState(false);
     const [hubConnection, SetHubConnection] = useState(null);
 
     useEffect(() => {

@@ -21,7 +21,7 @@ let objToSend = [];
 
 
 const Game = props => {
-    const [state, setState] = useState({...props.gameState, players: props.gameState.players.map(p => {return {...p, state: 0}})});////useState({word: 'cat', isPainter: true, players: [{username: 'Alfred', score: 100, state: 1}, {username: 'Mattias', score: 100, state: 0}, {username: 'Filip', score: 100, state: 2}]})//
+    const [state, setState] = useState({...props.gameState, players: props.gameState.players.map(p => {return {...p, state: 0}})});//useState({word: 'cat', isPainter: true, players: [{username: 'Alfred', score: 100, state: 1}, {username: 'Mattias', score: 100, state: 0}, {username: 'Filip', score: 100, state: 2}]})//////
     const [canvas, setCanvas] = useState({
         brushColor: 'red',
         lineWidth: 10,
@@ -84,12 +84,7 @@ const Game = props => {
                 return oState;
             })
         };
-        onDraw = draw => {
-            if (!isPainter){
-                console.log('draw: ' + draw.length);
-                setToDraw(draw);
-            }
-        };
+
     }, []);
 
     useEffect(() => {
@@ -109,6 +104,12 @@ const Game = props => {
                 sendDrawObjects();
             }
         }, 2000)
+        onDraw = draw => {
+            if (!isPainter){
+                console.log('draw: ' + draw.length);
+                setToDraw(draw);
+            }
+        };
         return () => {
             window.clearInterval(interval);
         }
@@ -137,6 +138,11 @@ const Game = props => {
         });
     };
 
+    const onClear = () => {
+        setToDraw([{clear: true}]);
+        objToSend.push({clear: true});
+    };
+
     return (
         <div className={classes.Game}>
             <GameControls players={state.players} guessMade={onGuessMade} word={state.word} exit={props.exit}/>
@@ -144,7 +150,7 @@ const Game = props => {
                 <div style={{width: '800px', height: '800px', backgroundColor: 'white', border: '1px solid black', margin: '0 auto'}}>
                     <Canvas isPainter={isPainter} registerDraw={onRegisterDraw} clearToDraw={onResetToDraw} {...canvas} toDraw={toDraw}/>
                 </div>
-                {state.word ? <PainterControls colorChanged={props.colorChanged} clear={props.clear} selectedColor={canvas.brushColor} onColorClick={onColorControlClick}/> : null}
+                {state.word ? <PainterControls colorChanged={props.colorChanged} clear={props.clear} selectedColor={canvas.brushColor} onColorClick={onColorControlClick} onClear={onClear}/> : null}
             </div>
         </div>
     );
