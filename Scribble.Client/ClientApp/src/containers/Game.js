@@ -4,6 +4,7 @@ import GameControls from '../components/GameControls';
 import {useHistory} from 'react-router-dom';
 import { ApiFactory } from '../Helpers/Api';
 import classes from './css/Game.module.css';
+import PainterControls from '../components/PainterControls';
 
 export const USER_TYPES = [
     '',
@@ -18,11 +19,12 @@ let onDraw;
 
 let objToSend = [];
 
+
 const Game = props => {
-    const [state, setState] = useState({word: 'cat', isPainter: true, players: [{username: 'Alfred', score: 100, state: 1}, {username: 'Mattias', score: 100, state: 0}, {username: 'Filip', score: 100, state: 2}]})//useState({...props.gameState, players: props.gameState.players.map(p => {return {...p, state: 0}})});//
+    const [state, setState] = useState({...props.gameState, players: props.gameState.players.map(p => {return {...p, state: 0}})});////useState({word: 'cat', isPainter: true, players: [{username: 'Alfred', score: 100, state: 1}, {username: 'Mattias', score: 100, state: 0}, {username: 'Filip', score: 100, state: 2}]})//
     const [canvas, setCanvas] = useState({
-        brushColor: '#000000',
-        lineWidth: 4,
+        brushColor: 'red',
+        lineWidth: 10,
         canvasStyle: {
           backgroundColor: 'FFFFFF'
         },
@@ -76,7 +78,7 @@ const Game = props => {
                     newP.score++;
                     const newPlayers = [...(oState.players.filter(p => p.username !== user).map(p => {return {...p}}))];
                     newPlayers.push(newP);
-                    const newState = {...oState, word: null, players: newPlayers};
+                    const newState = {...oState,  players: newPlayers};
                     return newState;
                 }
                 return oState;
@@ -126,6 +128,15 @@ const Game = props => {
         setToDraw(null);
     };
 
+    const onColorControlClick = (color) => {
+        setCanvas(pcanvas => {
+            return {
+                ...pcanvas,
+                brushColor: color
+            };
+        });
+    };
+
     return (
         <div className={classes.Game}>
             <GameControls players={state.players} guessMade={onGuessMade} word={state.word} exit={props.exit}/>
@@ -133,6 +144,7 @@ const Game = props => {
                 <div style={{width: '800px', height: '800px', backgroundColor: 'white', border: '1px solid black', margin: '0 auto'}}>
                     <Canvas isPainter={isPainter} registerDraw={onRegisterDraw} clearToDraw={onResetToDraw} {...canvas} toDraw={toDraw}/>
                 </div>
+                {state.word ? <PainterControls colorChanged={props.colorChanged} clear={props.clear} selectedColor={canvas.brushColor} onColorClick={onColorControlClick}/> : null}
             </div>
         </div>
     );

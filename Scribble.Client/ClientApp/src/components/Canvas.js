@@ -34,12 +34,14 @@ class Canvas extends React.Component {
         nextProps.clearToDraw();
       }
     }
+    const context = this.state.canvas.getContext('2d');
+    context.beginPath();
   }
 
   static getDefaultStyle() {
     return {
       brushColor: '#FFFF00',
-      lineWidth: 4,
+      lineWidth: 10,
       canvasStyle: {
         backgroundColor: '#00FFDC'
       },
