@@ -9,5 +9,6 @@ namespace Scribble.Functions.Models
         public int RoundsLeft { get; set; }
         public int SecondsPerRound { get; set; }
         public List<Player> Players { get; set; }
+        public string LastPainterId { get; set; }
     }
 }

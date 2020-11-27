@@ -23,7 +23,12 @@ namespace Scribble.Functions.Functions
             string[] _words = "Arrow,Panda,Ribs,Banana,Oil,Belt,Cheese,Desk,Legs,Air Conditioner,Shark,Raspberries,Bear,Hands,Fan,Chairs,Bird,Cap,Suit,Ostrich,Skyscraper".Split(',');
 
             string roundWord = _words[await context.CallActivityAsync<int>("GameOrchestrator_Random", _words.Length)];
-            string painterId = game.Players[await context.CallActivityAsync<int>("GameOrchestrator_Random", game.Players.Count)].ID;
+            string painterId = null;
+
+            if (game.Players.Count == 1)
+                painterId = game.Players.First().ID;
+            else
+                painterId = game.Players.Where(p => p.ID != game.LastPainterId).ToArray()[await context.CallActivityAsync<int>("GameOrchestrator_Random", game.Players.Count - (game.LastPainterId is null ? 0 : 1))].ID;
 
             var state = new RoundState
             {
@@ -46,6 +51,7 @@ namespace Scribble.Functions.Functions
             if (game.RoundsLeft > 0)
             {
                 game.RoundsLeft--;
+                game.LastPainterId = painterId;
                 context.ContinueAsNew(game);
             }
         }
