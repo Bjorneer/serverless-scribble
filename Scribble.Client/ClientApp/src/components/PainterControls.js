@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import classes from './css/PainterControls.module.css';
 import Button from './ui/Button';
 import ColorControl from './ui/ColorControl';

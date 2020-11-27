@@ -18,5 +18,7 @@ namespace Scribble.Functions.Models
         public double ToY { get; set; }
         [JsonProperty(PropertyName = "clear")]
         public bool Clear { get; set; }
+        [JsonProperty(PropertyName = "timeFromStart")]
+        public int TimeFromStart { get; set; }
     }
 }

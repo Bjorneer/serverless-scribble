@@ -33,7 +33,7 @@ namespace Scribble.Functions.Functions
 
             data.UserName = data.UserName.Replace(" ", "");
 
-            if (string.IsNullOrEmpty(data.UserName) || data.UserName.Length < 5)
+            if (string.IsNullOrEmpty(data.UserName) || data.UserName.Length < 5 || data.UserName.Length > 15)
                 return new BadRequestResult();
 
             var player = new Player
@@ -80,7 +80,7 @@ namespace Scribble.Functions.Functions
 
             data.UserName = data.UserName.Replace(" ", "");
 
-            if (string.IsNullOrWhiteSpace(data.UserName) || data.UserName.Length < 5 || string.IsNullOrWhiteSpace(data.GameCode))
+            if (string.IsNullOrWhiteSpace(data.UserName) || data.UserName.Length < 5 || string.IsNullOrWhiteSpace(data.GameCode) || data.UserName.Length > 15)
                 return new BadRequestResult();
 
             var player = new Player

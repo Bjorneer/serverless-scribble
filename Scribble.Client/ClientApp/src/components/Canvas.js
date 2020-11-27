@@ -2,6 +2,8 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import assign from 'object-assign'
 
+let objToDraw = [];
+
 class Canvas extends React.Component {
   componentDidMount(){
     const canvas = ReactDOM.findDOMNode(this);
@@ -15,21 +17,38 @@ class Canvas extends React.Component {
 
     context.beginPath();
 
+    objToDraw = [];
+    
     this.setState({
-      canvas
+      canvas,
+      startTime: Date.now()
     });
+
+    this.interval = setInterval(() => {
+      const time = Date.now();
+      const toDraw = objToDraw.filter(o => o.timeFromStart + 2000 <= time - this.state.startTime);
+      if(toDraw.length > 0){
+        objToDraw = objToDraw.filter(o => o.timeFromStart + 2000 > time - this.state.startTime);
+        toDraw.forEach(e => {
+          if(e.clear){
+            this.resetCanvas();
+          }
+          else
+            this.draw(e.fromX, e.fromY, e.toX, e.toY, e.color, e.width, true);
+          }
+        );
+      }
+
+    }, 10);
+
+  }
+  componentWillUnmount(){
+    clearInterval(this.interval);
   }
 
   componentWillReceiveProps(nextProps) {
     if(nextProps.toDraw){
-      nextProps.toDraw.forEach(e => {
-        if(e.clear){
-          this.resetCanvas();
-        }
-        else if(!nextProps.isPainter)
-          this.draw(e.fromX, e.fromY, e.toX, e.toY, e.color, e.width, true);
-        }
-      );
+      objToDraw = objToDraw.concat(nextProps.toDraw);
       if(nextProps.toDraw){
         nextProps.clearToDraw();
       }
@@ -37,6 +56,7 @@ class Canvas extends React.Component {
     const context = this.state.canvas.getContext('2d');
     context.beginPath();
   }
+
 
   static getDefaultStyle() {
     return {

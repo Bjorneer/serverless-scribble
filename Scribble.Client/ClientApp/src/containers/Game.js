@@ -1,7 +1,6 @@
 ﻿import React, {useState, useEffect} from 'react';
 import Canvas from '../components/Canvas';
 import GameControls from '../components/GameControls';
-import {useHistory} from 'react-router-dom';
 import { ApiFactory } from '../Helpers/Api';
 import classes from './css/Game.module.css';
 import PainterControls from '../components/PainterControls';
@@ -20,9 +19,10 @@ let onDraw;
 let objToSend = [];
 
 
+
 const Game = props => {
-    //const [state, setState] = useState({...props.gameState, players: props.gameState.players.map(p => {return {...p, state: 0}})});
-    const [state, setState] = useState({ isPainter: true, players: [{username: 'Alfred', score: 100, state: 1}, {username: 'Mattias', score: 100, state: 0}, {username: 'Filip', score: 100, state: 2}]});
+    const [state, setState] = useState({...props.gameState, players: props.gameState.players.map(p => {return {...p, state: 0}})});
+    //const [state, setState] = useState({word: 'cat', isPainter: true, players: [{username: 'Alfred', score: 100, state: 1}, {username: 'Mattias', score: 100, state: 0}, {username: 'Filip', score: 100, state: 2}]});
     const [canvas, setCanvas] = useState({
         brushColor: 'red',
         lineWidth: 10,
@@ -34,7 +34,7 @@ const Game = props => {
     const [hubConnection] = useState(props.hubConnection);
     const [toDraw, setToDraw] = useState(null);
     const [isPainter, setIsPainter] = useState(false);
-    const history = useHistory();
+    const [startDate] = useState(Date.now);
 
 
     const sendDrawObjects = async () => {
@@ -50,7 +50,7 @@ const Game = props => {
         onNewRound = drawer => {
             console.log('onNewRound: ' + drawer);
             objToSend = [];
-            setToDraw([{clear: true}]);
+            setToDraw([{clear: true, timeFromStart: Date.now() - startDate - 1000}]);
             setState(oState => {
                 const newP = {...(oState.players.find(p => p.username === drawer))};
                 newP.state = 1;
@@ -104,7 +104,7 @@ const Game = props => {
             if (isPainter){
                 sendDrawObjects();
             }
-        }, 2000)
+        }, 300)
         onDraw = draw => {
             if (!isPainter){
                 console.log('draw: ' + draw.length);
@@ -123,7 +123,7 @@ const Game = props => {
     };
 
     const onRegisterDraw = drawObj => {
-        objToSend.push(drawObj);
+        objToSend.push({...drawObj, timeFromStart: Date.now() - startDate});
     };
 
     const onResetToDraw = () => {
@@ -131,6 +131,7 @@ const Game = props => {
     };
 
     const onColorControlClick = (color) => {
+        sendDrawObjects();
         setCanvas(pcanvas => {
             return {
                 ...pcanvas,
@@ -140,8 +141,8 @@ const Game = props => {
     };
 
     const onClear = () => {
-        setToDraw([{clear: true}]);
-        objToSend.push({clear: true});
+        setToDraw([{clear: true, timeFromStart: Date.now() - startDate - 2000}]);
+        objToSend.push({clear: true, timeFromStart: Date.now() - startDate});
     };
 
     return (
