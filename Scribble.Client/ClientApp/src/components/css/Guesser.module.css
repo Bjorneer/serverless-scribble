@@ -1,8 +1,8 @@
 .Guesser{
     width: 100%;
-    margin: 10px 0px;
+    margin: 0px 0px 10px 0px;
     box-sizing: border-box;
-    border-radius: 5px;
+    border-radius: 0px 0px 5px 5px;
     background-color: white;
 }
 
@@ -10,11 +10,13 @@
 }
 
 .Guesser input{
-    border: 1px solid black;
+    border: solid black;
+    border-width: 0px 1px 1px 1px;
+    border-top: 1px solid gray;
     color: black;
     font-size: x-large;
     width: 100%; 
-    border-radius: 5px;
+    border-radius: 0px 0px 5px 5px;
     font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
     padding: 5px;
     outline: none;

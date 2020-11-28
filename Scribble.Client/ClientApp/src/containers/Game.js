@@ -22,7 +22,7 @@ let objToSend = [];
 
 const Game = props => {
     const [state, setState] = useState({...props.gameState, players: props.gameState.players.map(p => {return {...p, state: 0}})});
-    //const [state, setState] = useState({word: 'cat', isPainter: true, players: [{username: 'Alfred', score: 100, state: 1}, {username: 'Mattias', score: 100, state: 0}, {username: 'Filip', score: 100, state: 2}]});
+    //const [state, setState] = useState({word: 'cat', user: 'Alfred', isPainter: true, players: [{username: 'Alfred', score: 100, state: 1}, {username: 'Mattias', score: 100, state: 0}, {username: 'Filip', score: 100, state: 2}]});
     const [canvas, setCanvas] = useState({
         brushColor: 'red',
         lineWidth: 10,
@@ -144,10 +144,9 @@ const Game = props => {
         setToDraw([{clear: true, timeFromStart: Date.now() - startDate - 2000}]);
         objToSend.push({clear: true, timeFromStart: Date.now() - startDate});
     };
-
     return (
         <div className={classes.Game}>
-            <GameControls players={state.players} guessMade={onGuessMade} word={state.word} exit={props.exit}/>
+            <GameControls players={state.players} guessMade={onGuessMade} word={state.word} exit={props.exit} user={state.user} hubConnection={hubConnection}/>
             <div style={{textAlign: 'center', display: 'inline-block', width: '80%'}}>
                 <div style={{width: '800px', height: '800px', backgroundColor: 'white', border: '1px solid black', margin: '0 auto'}}>
                     <Canvas isPainter={isPainter} registerDraw={onRegisterDraw} clearToDraw={onResetToDraw} {...canvas} toDraw={toDraw}/>

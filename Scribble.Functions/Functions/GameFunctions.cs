@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Scribble.Functions.Models;
 using Scribble.Functions.Requests;
+using Scribble.Functions.Responses;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -61,7 +62,7 @@ namespace Scribble.Functions.Functions
             string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
             var data = JsonConvert.DeserializeObject<GuessRequest>(requestBody);
 
-            if (data.GameCode == null)
+            if (data.GameCode == null ||data.Guess == null || data.Guess.Length > 35)
                 return new BadRequestResult();
 
             var status = await client.GetStatusAsync("g" + data.GameCode);
@@ -78,14 +79,28 @@ namespace Scribble.Functions.Functions
                 return new BadRequestResult();
 
             if (state.Word.ToLower() != data.Guess.ToLower())
+            {
+                await signalRMessages.AddAsync(new SignalRMessage
+                {
+                    GroupName = data.GameCode,
+                    Target = "inMessage",
+                    Arguments = new[] { new MessageItem {User=state.Players.First(p =>p.ID == data.PlayerID).UserName, Message = data.Guess } }
+                });
                 return new BadRequestResult();
-
+            }
             await signalRMessages.AddAsync(new SignalRMessage
             {
                 GroupName = data.GameCode,
                 Target = "guessCorrect",
                 Arguments = new[] { state.Players.First(p => p.ID == data.PlayerID).UserName }
             });
+            await signalRMessages.AddAsync(new SignalRMessage
+            {
+                GroupName = data.GameCode,
+                Target = "inMessage",
+                Arguments = new[] { new MessageItem { User = "GAME_EVENT", Message = $"{state.Players.First(p => p.ID == data.PlayerID).UserName} guessed correctly"} }
+            });
+
 
             return new OkResult();
         }

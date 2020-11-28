@@ -2,6 +2,7 @@ using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.DurableTask;
 using Microsoft.Azure.WebJobs.Extensions.SignalRService;
 using Scribble.Functions.Models;
+using Scribble.Functions.Responses;
 using System;
 using System.Linq;
 using System.Threading;
@@ -52,8 +53,21 @@ namespace Scribble.Functions.Functions
             {
                 game.RoundsLeft--;
                 game.LastPainterId = painterId;
+                await context.CallActivityAsync("GameOrchestrator_EndOfRound" ,new Tuple<string, string>(roundWord, game.GameCode));
                 context.ContinueAsNew(game);
             }
+        }
+
+        [FunctionName("GameOrchestrator_EndOfRound")]
+        public static Task EndOfRound([ActivityTrigger] Tuple<string, string> tuple,
+            [SignalR(HubName = "game")] IAsyncCollector<SignalRMessage> signalRMessages)
+        {
+            return signalRMessages.AddAsync(new SignalRMessage
+            {
+                GroupName = tuple.Item2,
+                Target = "inMessage",
+                Arguments = new[] { new MessageItem { User="GAME_EVENT", Message=$"ROUND END | Word was {tuple.Item1}"} }
+            });
         }
 
         [FunctionName("GameOrchestrator_StartNewRound")]

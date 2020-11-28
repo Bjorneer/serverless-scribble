@@ -5,6 +5,7 @@ import Guesser from './Guesser';
 import {USER_TYPES} from '../containers/Game';
 import classes from './css/GameControls.module.css';
 import {ImExit} from 'react-icons/im';
+import Chat from '../components/Chat';
 
 const GameControls = props => {
 
@@ -40,6 +41,7 @@ const GameControls = props => {
                     </div>
                 </Button>
                 <ScoreBoard users={users} />
+                <Chat user={props.user} hubConnection={props.hubConnection}/>
                 <Guesser onGuessMade={props.guessMade} disabled={props.word}></Guesser>
                 {wordBox}
             </div>

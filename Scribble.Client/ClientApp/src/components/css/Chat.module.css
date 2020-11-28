@@ -1,0 +1,51 @@
+.Chat{
+    width: 100%;
+    border: solid black;
+    border-width: 1px 1px 0px 1px;
+    border-radius: 5px 5px 0px 0px;
+    box-sizing: border-box;
+    font-size: large;
+    text-align: center;
+    margin: 10px 0px 0px 0px;
+    background-color: white;
+    height: 300px;
+    overflow-y:scroll;
+    display: flex;
+    flex-direction: column-reverse;
+}
+
+.ChatMessage{
+
+}
+
+.FriendlyMessage{
+    float: right;
+
+    margin: 2px 8px 2px 4px;
+}
+
+.OpponentMessage{
+    float: left;
+    margin: 2px 8px 2px 4px;
+}
+
+.User{
+    display: inline-block;
+    font-weight: bold;
+    margin: 0px 6px;
+}
+
+.GameEvent{
+    margin: 2px 8px 2px 4px;
+    font-weight: bold;
+    display: inline-block;
+    background-color: rgb(178, 238, 178);
+    width: 80%;
+    border-radius: 10px;
+
+}
+
+.Message{
+    display: inline-block;
+    padding: 0px 4px;
+}
