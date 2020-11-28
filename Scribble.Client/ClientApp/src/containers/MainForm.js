@@ -18,7 +18,8 @@ const MainForm = props => {
                 required: true
             },
             isValid: false,
-            touched: false
+            touched: false,
+            onlyUpper: false
         },
         gameCode: {
             elementType: 'input',
@@ -31,7 +32,8 @@ const MainForm = props => {
                 required: true
             },
             isValid: false,
-            touched: false
+            touched: false,
+            onlyUpper: true
         },
     });
 
@@ -43,7 +45,11 @@ const MainForm = props => {
             ...updatedForm[inputIdentifier]
         };
 
-        updatedFormElement.value = event.target.value;
+        if (mainForm[inputIdentifier].onlyUpper){
+            updatedFormElement.value = event.target.value.toUpperCase();
+        }
+        else
+            updatedFormElement.value = event.target.value;
 
         updatedFormElement.valid = validate(updatedFormElement.value, updatedFormElement.validation);
         updatedFormElement.touched = true;
@@ -61,7 +67,8 @@ const MainForm = props => {
     for (let element in mainForm) {
         form.push(
         <Input 
-            key={element} 
+            key={element}
+            value={mainForm[element].value}
             placeholder={mainForm[element].elementConfig.placeholder} 
             type={mainForm[element].elementConfig.type}
             onChange={(e) => onInputChangedHandler(e, element)} ></Input>)

@@ -1,9 +1,8 @@
 .ScoreBoard {
     height: auto;
-    min-height: 300px;
     border: 1px black solid;
     text-align: left;
-    padding: 0px 5px;
+    padding: 0px 5px 5px 5px;
     background-color: white;
     border-radius: 10px;
 }
