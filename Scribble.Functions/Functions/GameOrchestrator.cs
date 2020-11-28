@@ -2,8 +2,8 @@ using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.DurableTask;
 using Microsoft.Azure.WebJobs.Extensions.SignalRService;
 using Scribble.Functions.Models;
-using Scribble.Functions.Responses;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -26,6 +26,32 @@ namespace Scribble.Functions.Functions
             string roundWord = _words[await context.CallActivityAsync<int>("GameOrchestrator_Random", _words.Length)];
             string painterId = null;
 
+            await context.CallActivityAsync("GameOrchestrator_RequestHeartBeat", game.GameCode);
+            var ctstoken = new CancellationTokenSource();
+            var players = new List<Player>();
+            while (true)
+            {
+                var heartBeatEvent = context.WaitForExternalEvent<string>("HeartBeat", TimeSpan.FromSeconds(4), ctstoken.Token);
+                try
+                {
+                    string playerId = await heartBeatEvent;
+                    var player = game.Players.FirstOrDefault(p => p.ID == playerId);
+                    if (player != null)
+                        players.Add(player);
+                }
+                catch
+                {
+                    break;
+                }
+            }
+            game.Players = players;
+
+            if (game.Players.Count == 0)
+                return;
+
+            if (!game.Players.Any(p => p.ID == game.LastPainterId))
+                game.LastPainterId = null;
+
             if (game.Players.Count == 1)
                 painterId = game.Players.First().ID;
             else
@@ -40,6 +66,7 @@ namespace Scribble.Functions.Functions
 
             context.SetCustomStatus(state);
 
+
             await context.CallActivityAsync("GameOrchestrator_StartNewRound", new Tuple<string, string>(game.Players.First(p => p.ID == painterId).UserName, game.GameCode));
 
             await context.CallActivityAsync("GameOrchestrator_MakePainter", new Tuple<string, string>(roundWord, painterId));
@@ -53,7 +80,7 @@ namespace Scribble.Functions.Functions
             {
                 game.RoundsLeft--;
                 game.LastPainterId = painterId;
-                await context.CallActivityAsync("GameOrchestrator_EndOfRound" ,new Tuple<string, string>(roundWord, game.GameCode));
+                await context.CallActivityAsync("GameOrchestrator_EndOfRound", new Tuple<string, string>(roundWord, game.GameCode));
                 context.ContinueAsNew(game);
             }
         }
@@ -64,18 +91,23 @@ namespace Scribble.Functions.Functions
         {
             return signalRMessages.AddAsync(new SignalRMessage
             {
+
                 GroupName = tuple.Item2,
                 Target = "inMessage",
-                Arguments = new[] { new MessageItem { User="GAME_EVENT", Message=$"ROUND END | Word was {tuple.Item1}"} }
+                Arguments = new[] { new MessageItem { User="GAME_EVENT", Message=$"ROUND END | Word was {tuple.Item1}" } }
+
             });
         }
 
         [FunctionName("GameOrchestrator_StartNewRound")]
+
         public static Task StartNewRound([ActivityTrigger] Tuple<string, string> tuple,
-            [SignalR(HubName = "game")] IAsyncCollector<SignalRMessage> signalRMessages)
+
+           [SignalR(HubName = "game")] IAsyncCollector<SignalRMessage> signalRMessages)
         {
             return signalRMessages.AddAsync(new SignalRMessage
             {
+
                 GroupName = tuple.Item2,
                 Target = "newRound",
                 Arguments = new[] { tuple.Item1 }
@@ -83,14 +115,30 @@ namespace Scribble.Functions.Functions
         }
 
         [FunctionName("GameOrchestrator_MakePainter")]
+
         public static Task MakePainter([ActivityTrigger] Tuple<string, string> tuple,
+
+           [SignalR(HubName = "game")] IAsyncCollector<SignalRMessage> signalRMessages)
+        {
+            return signalRMessages.AddAsync(new SignalRMessage
+            {
+
+                UserId = tuple.Item2,
+                Target = "makePainter",
+                Arguments = new[] { tuple.Item1 }
+
+            });
+        }
+
+        [FunctionName("GameOrchestrator_RequestHeartBeat")]
+        public static Task RequestHeartBeat([ActivityTrigger] string gameId,
             [SignalR(HubName = "game")] IAsyncCollector<SignalRMessage> signalRMessages)
         {
             return signalRMessages.AddAsync(new SignalRMessage
             {
-                UserId = tuple.Item2,
-                Target = "makePainter",
-                Arguments = new[] { tuple.Item1 }
+                GroupName = gameId,
+                Target = "sendHeartBeat",
+                Arguments = new object[0]
             });
         }
 
@@ -99,6 +147,7 @@ namespace Scribble.Functions.Functions
         public static int Random([ActivityTrigger] int max)
         {
             return _random.Next(0, max);
+
         }
 
 

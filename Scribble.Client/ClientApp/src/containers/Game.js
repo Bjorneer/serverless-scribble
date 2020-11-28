@@ -21,8 +21,8 @@ let objToSend = [];
 
 
 const Game = props => {
-    //const [state, setState] = useState({...props.gameState, players: props.gameState.players.map(p => {return {...p, state: 0}})});
-    const [state, setState] = useState({word: 'cat', user: 'Alfred', isPainter: true, players: [{username: 'Alfred', score: 100, state: 1}, {username: 'Mattias', score: 100, state: 0}, {username: 'Filip', score: 100, state: 2}]});
+    const [state, setState] = useState({...props.gameState, players: props.gameState.players.map(p => {return {...p, state: 0}})});
+    //const [state, setState] = useState({word: 'cat', user: 'Alfred', isPainter: true, players: [{username: 'Alfred', score: 100, state: 1}, {username: 'Mattias', score: 100, state: 0}, {username: 'Filip', score: 100, state: 2}]});
     const [canvas, setCanvas] = useState({
         brushColor: 'red',
         lineWidth: 10,
@@ -88,6 +88,10 @@ const Game = props => {
 
     }, []);
 
+    const sendHeartBeat = async () => {
+        await ApiFactory.sendHeartBeat({token: state.playerId, gamecode: state.gamecode});
+    }
+
     useEffect(() => {
         if(hubConnection !== null){
             hubConnection.off();
@@ -95,9 +99,9 @@ const Game = props => {
             hubConnection.on('makePainter', (word) => { onMakePainter(word); });
             hubConnection.on('guessCorrect', (name) => { onGuessCorrect(name); });
             hubConnection.on('draw', (drawList) => { onDraw(drawList); });
+            hubConnection.on('sendHeartBeat', () => { sendHeartBeat()})
         }
     }, [])
-
 
     useEffect(() => {
         const interval = window.setInterval(async () => {

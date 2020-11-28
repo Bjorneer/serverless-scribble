@@ -13,8 +13,8 @@ namespace Scribble.Functions.Functions
             ILogger log,
             [DurableClient] IDurableEntityClient client)
         {
-            //https://docs.microsoft.com/en-us/dotnet/api/microsoft.azure.webjobs.extensions.durabletask.idurableentityclient.listentitiesasync?view=azure-dotnet
             log.LogInformation($"C# Timer trigger function {nameof(DeleteOldGames)} executed at: {DateTime.Now}");
+
         }
     }
 }
