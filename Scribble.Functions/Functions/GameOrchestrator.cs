@@ -1,3 +1,4 @@
+using Microsoft.Azure.Cosmos.Table;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.DurableTask;
 using Microsoft.Azure.WebJobs.Extensions.SignalRService;
@@ -21,9 +22,7 @@ namespace Scribble.Functions.Functions
         {
             var game = context.GetInput<Game>();
 
-            string[] _words = "Arrow,Panda,Ribs,Banana,Oil,Belt,Cheese,Desk,Legs,Air Conditioner,Shark,Raspberries,Bear,Hands,Fan,Chairs,Bird,Cap,Suit,Ostrich,Skyscraper".Split(',');
-
-            string roundWord = _words[await context.CallActivityAsync<int>("GameOrchestrator_Random", _words.Length)];
+            string roundWord = await context.CallActivityAsync<string>("GameOrchestrator_RandomWord", null);
             string painterId = null;
 
             await context.CallActivityAsync("GameOrchestrator_RequestHeartBeat", game.GameCode);
@@ -142,8 +141,22 @@ namespace Scribble.Functions.Functions
             });
         }
 
-        [FunctionName("GameOrchestrator_Random")]
+        private const int NUMBER_OF_WORDS = 2298;
 
+        [FunctionName("GameOrchestrator_RandomWord")]
+        public static string RandomWord(
+            [ActivityTrigger] string t,
+            [Table("ScribbleWords", Connection = "AzureWebJobsStorage")] CloudTable cloudTable)
+        {
+            int rand = _random.Next(1, NUMBER_OF_WORDS + 1);
+            TableOperation getItem = TableOperation.Retrieve<WordEntity>("Words", rand.ToString());
+            var query = cloudTable.Execute(getItem);
+            if (query.Result == null)
+                return "TEST";
+            return ((WordEntity)query.Result).Word;
+        }
+
+        [FunctionName("GameOrchestrator_Random")]
         public static int Random([ActivityTrigger] int max)
         {
             return _random.Next(0, max);

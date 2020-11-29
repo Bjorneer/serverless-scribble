@@ -15,7 +15,7 @@ namespace Scribble.Functions.Functions
 
             ]TimerInfo myTimer,
             ILogger log,
-            [DurableClient] IDurableOrchestrationClient client,)
+            [DurableClient] IDurableOrchestrationClient client)
         {
             log.LogInformation($"C# Timer trigger function {nameof(DeleteOldGames)} executed at: {DateTime.Now}");
             return client.PurgeInstanceHistoryAsync(
