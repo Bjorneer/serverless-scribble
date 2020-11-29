@@ -15,10 +15,12 @@ const MainForm = props => {
             },
             value: '',
             validation: {
-                required: true
+                required: true,
+                minLength: 5,
+                maxLength: 10
             },
             isValid: false,
-            touched: false,
+            isTouched: false,
             onlyUpper: false
         },
         gameCode: {
@@ -29,10 +31,12 @@ const MainForm = props => {
             },
             value: '',
             validation: {
-                required: true
+                required: true,
+                minLength: 6,
+                maxLength: 6
             },
             isValid: false,
-            touched: false,
+            isTouched: false,
             onlyUpper: true
         },
     });
@@ -51,13 +55,13 @@ const MainForm = props => {
         else
             updatedFormElement.value = event.target.value;
 
-        updatedFormElement.valid = validate(updatedFormElement.value, updatedFormElement.validation);
-        updatedFormElement.touched = true;
+        updatedFormElement.isValid = validate(updatedFormElement.value, updatedFormElement.validation);
+        updatedFormElement.isTouched = true;
         updatedForm[inputIdentifier] = updatedFormElement;
 
         let formValid = true;
-        for (let inputIdentifiers in form){
-            formValid = formValid && form[inputIdentifiers].valid
+        for (let inputIdentifiers in updatedForm){
+            formValid = formValid && updatedForm[inputIdentifiers].isValid
         }
         setMainForm(updatedForm);
         setFormIsValid(formValid);
@@ -71,14 +75,16 @@ const MainForm = props => {
             value={mainForm[element].value}
             placeholder={mainForm[element].elementConfig.placeholder} 
             type={mainForm[element].elementConfig.type}
-            onChange={(e) => onInputChangedHandler(e, element)} ></Input>)
+            onChange={(e) => onInputChangedHandler(e, element)} 
+            isValid={mainForm[element].isValid}
+            isTouched={mainForm[element].isTouched}></Input>)
     }
     return (
             <form onSubmit={props.onSubmit}>
                 {form}
                 <Button 
                     type='Success' 
-                    disabled={!mainForm.isValid} 
+                    disabled={!mainForm.username.isValid} 
                     onClick={(e) => props.onCreateGame(e, mainForm.username.value)}>Create New Game
                 </Button>
                 <Button 
