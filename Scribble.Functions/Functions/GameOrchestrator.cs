@@ -22,6 +22,7 @@ namespace Scribble.Functions.Functions
         {
             var game = context.GetInput<Game>();
 
+
             string roundWord = await context.CallActivityAsync<string>("GameOrchestrator_RandomWord", null);
             string painterId = null;
 
@@ -74,6 +75,8 @@ namespace Scribble.Functions.Functions
             var timerTask = context.CreateTimer(context.CurrentUtcDateTime.Add(TimeSpan.FromSeconds(game.SecondsPerRound)), cts.Token);
 
             await timerTask;
+
+            context.SetCustomStatus(null);
 
             if (game.RoundsLeft > 0)
             {
