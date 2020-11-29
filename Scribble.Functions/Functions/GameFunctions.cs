@@ -40,6 +40,9 @@ namespace Scribble.Functions.Functions
 
             var state = status.CustomStatus.ToObject<RoundState>();
 
+            if (state == null)
+                return new BadRequestObjectResult();
+
             if (state.PainterId != data.PlayerID)
                 return new BadRequestResult();
 
