@@ -30,12 +30,14 @@ const MainMenu = props => {
 
     }, [])
 
+    const gameStarting = props.gameStarting;
+
     useEffect(() => {
         onGameStarted = () => {
             console.log(gameState);
-            props.gameStarting(gameState, hubConnection);
+            gameStarting(gameState, hubConnection);
         };
-    }, [gameState, hubConnection]);
+    }, [gameState, hubConnection, gameStarting]);
 
     const onJoinGameHandler = async (e, gameCode, username) => {
         e.preventDefault();

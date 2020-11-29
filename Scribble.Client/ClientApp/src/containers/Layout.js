@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useCallback, useState} from 'react';
 import MainMenu from './MainMenu';
 import Game from './Game';
 import { useHistory } from "react-router-dom";
@@ -13,11 +13,13 @@ const Layout = () => {
   const [hubConnection, setHubConnection] = useState(null);
   const history = useHistory();
 
-  const onExitGame = () => {
-    setGameState(null);
-    setHubConnection(null); // maybe close connection first if exists
-    history.push('/');
-  };
+  const onExitGame = useCallback(() => {
+      setGameState(null);
+      setHubConnection(null); // maybe close connection first if exists
+      history.push('/');
+    },
+    [history]
+  )
 
   const onGameStarting = (gamestate, hubConnection) => {
       setGameState(gamestate);

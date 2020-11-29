@@ -1,4 +1,4 @@
-﻿import React, {useState, useEffect} from 'react';
+﻿import React, {useState, useEffect, useCallback} from 'react';
 import Canvas from '../components/Canvas';
 import GameControls from '../components/GameControls';
 import { ApiFactory } from '../Helpers/Api';
@@ -37,14 +37,7 @@ const Game = props => {
     const [startDate] = useState(Date.now);
 
 
-    const sendDrawObjects = async () => {
-        if (objToSend.length > 0){
-            const temp = objToSend;
-            objToSend = [];
-            console.log('send: ' + temp.length);
-            await ApiFactory.draw({token: state.playerId, gamecode: state.gamecode, drawObjects: temp}); // make it not send every draw command
-        }
-    };
+
 
     useEffect(() => {
         onNewRound = drawer => {
@@ -86,13 +79,14 @@ const Game = props => {
             })
         };
 
-    }, []);
-
-    const sendHeartBeat = async () => {
-        await ApiFactory.sendHeartBeat({token: state.playerId, gamecode: state.gamecode});
-    }
+    }, [startDate, state.user]);
 
     useEffect(() => {
+
+        const sendHeartBeat = async () => {
+            await ApiFactory.sendHeartBeat({token: state.playerId, gamecode: state.gamecode});
+        }
+
         if(hubConnection !== null){
             hubConnection.off();
             hubConnection.on('newRound', (painterName) => { onNewRound(painterName); });
@@ -101,7 +95,19 @@ const Game = props => {
             hubConnection.on('draw', (drawList) => { onDraw(drawList); });
             hubConnection.on('sendHeartBeat', () => { sendHeartBeat()})
         }
-    }, [])
+    }, [hubConnection, state.gamecode, state.playerId])
+
+    const sendDrawObjects = useCallback(
+        async () => {
+            if (objToSend.length > 0){
+                const temp = objToSend;
+                objToSend = [];
+                console.log('send: ' + temp.length);
+                await ApiFactory.draw({token: state.playerId, gamecode: state.gamecode, drawObjects: temp}); // make it not send every draw command
+            }
+        },
+        [state.gamecode, state.playerId]
+    ); 
 
     useEffect(() => {
         const interval = window.setInterval(async () => {
@@ -118,13 +124,14 @@ const Game = props => {
         return () => {
             window.clearInterval(interval);
         }
-    }, [isPainter])
+    }, [isPainter, sendDrawObjects])
 
-
-
-    const onGuessMade = async (guess) => {
-        await ApiFactory.guess({guess: guess, gamecode: state.gamecode, token: state.playerId});
-    };
+    const onGuessMade = useCallback(
+        async (guess) => {
+            await ApiFactory.guess({guess: guess, gamecode: state.gamecode, token: state.playerId});
+        },
+        [state.gamecode, state.playerId]
+    );
 
     const onRegisterDraw = drawObj => {
         objToSend.push({...drawObj, timeFromStart: Date.now() - startDate});

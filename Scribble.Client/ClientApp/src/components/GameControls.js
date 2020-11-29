@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo } from 'react';
 import ScoreBoard from '../components/ScoreBoard';
 import Button from '../components/ui/Button';
 import Guesser from './Guesser';
@@ -7,9 +7,9 @@ import classes from './css/GameControls.module.css';
 import {ImExit} from 'react-icons/im';
 import Chat from '../components/Chat';
 
-const GameControls = props => {
+const GameControls = memo(({players,word,hubConnection, guessMade, user, exit}) => {
 
-    const users = props.players.map((p) => {
+    const users = players.map((p) => {
         return{
             name: p.username,
             score: p.score,
@@ -18,12 +18,12 @@ const GameControls = props => {
     });
 
     let wordBox = null;
-    if (props.word){
+    if (word){
         wordBox = (
             <div className={classes.WordBox}>
                 WORD TO DRAW
                 <div className={classes.Word}>
-                    {props.word}
+                    {word}
                 </div>
             </div>
         );
@@ -32,7 +32,7 @@ const GameControls = props => {
     return (
         <>
             <div style={{display: 'inline-block', verticalAlign: 'top', width: '20%', padding: '10px', boxSizing: 'border-box'}}>
-                <Button type='Error' style={{width: '100%', margin: '0px 0px 15px 0px', maxWidth: '200px', height: '70px'}} onClick={props.exit} >
+                <Button type='Error' style={{width: '100%', margin: '0px 0px 15px 0px', maxWidth: '200px', height: '70px'}} onClick={exit} >
                     <div style={{position: 'relative'}}>
                         <div style={{ display: 'inline-block', left: '0%', position: 'absolute', top: '50%', transform: 'translate(0%, -40%)'}}>
                             <ImExit size='50px'/>
@@ -41,13 +41,13 @@ const GameControls = props => {
                     </div>
                 </Button>
                 <ScoreBoard users={users} />
-                <Chat user={props.user} hubConnection={props.hubConnection}/>
-                <Guesser onGuessMade={props.guessMade} disabled={props.word}></Guesser>
+                <Chat user={user} hubConnection={hubConnection}/>
+                <Guesser onGuessMade={guessMade} disabled={word}></Guesser>
                 {wordBox}
             </div>
         </>
     )
-};
+});
 
 
 export default GameControls;
