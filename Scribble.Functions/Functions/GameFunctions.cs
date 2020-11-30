@@ -41,7 +41,7 @@ namespace Scribble.Functions.Functions
             var state = status.CustomStatus.ToObject<RoundState>();
 
             if (state == null)
-                return new BadRequestObjectResult();
+                return new BadRequestResult();
 
             if (state.PainterId != data.PlayerID)
                 return new BadRequestResult();
@@ -78,7 +78,7 @@ namespace Scribble.Functions.Functions
 
             var state = status.CustomStatus.ToObject<RoundState>();
 
-            if (state == null || !state.Players.Any(p => p.ID == data.PlayerID) || state.PainterId == data.PlayerID)
+            if (state == null || !state.Players.Any(p => p.ID == data.PlayerID && p.IsCorrect == false) || state.PainterId == data.PlayerID)
                 return new BadRequestResult();
 
             if (state.Word.ToLower() != data.Guess.ToLower())
@@ -91,6 +91,8 @@ namespace Scribble.Functions.Functions
                 });
                 return new BadRequestResult();
             }
+            await client.RaiseEventAsync("g" + data.GameCode, "CorrectGuess", data.PlayerID);
+
             await signalRMessages.AddAsync(new SignalRMessage
             {
                 GroupName = data.GameCode,

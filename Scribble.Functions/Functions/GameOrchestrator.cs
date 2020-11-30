@@ -45,6 +45,7 @@ namespace Scribble.Functions.Functions
                 }
             }
             game.Players = players;
+            ctstoken.Cancel();
 
             if (game.Players.Count == 0)
                 return;
@@ -74,17 +75,40 @@ namespace Scribble.Functions.Functions
             var cts = new CancellationTokenSource();
             var timerTask = context.CreateTimer(context.CurrentUtcDateTime.Add(TimeSpan.FromSeconds(game.SecondsPerRound)), cts.Token);
 
-            await timerTask;
+            int correct = 0;
+
+            while (correct != game.Players.Count - 1 && game.Players.Count != 1)
+            {
+                var correctGuessTask = context.WaitForExternalEvent<string>("CorrectGuess");
+
+                var finsihedTask = await Task.WhenAny(timerTask, correctGuessTask);
+
+                if (finsihedTask == timerTask)
+                    break;
+
+                var correctPlayer = state.Players.FirstOrDefault(p => p.ID == correctGuessTask.Result && p.IsCorrect == false && p.ID != state.PainterId);
+                if(correctPlayer != null)
+                {
+                    correct++;
+                    correctPlayer.IsCorrect = true;
+                    context.SetCustomStatus(state);
+                }
+            }
+            cts.Cancel();
 
             context.SetCustomStatus(null);
+
+            await context.CallActivityAsync("GameOrchestrator_EndOfRound", new Tuple<string, string>(roundWord, game.GameCode));
 
             if (game.RoundsLeft > 0)
             {
                 game.RoundsLeft--;
                 game.LastPainterId = painterId;
-                await context.CallActivityAsync("GameOrchestrator_EndOfRound", new Tuple<string, string>(roundWord, game.GameCode));
+                game.Players.ForEach(p => p.IsCorrect = false);
                 context.ContinueAsNew(game);
             }
+            else
+                await context.CallActivityAsync("GameOrchestrator_EndOfGame", game.GameCode);
         }
 
         [FunctionName("GameOrchestrator_EndOfRound")]
@@ -93,10 +117,22 @@ namespace Scribble.Functions.Functions
         {
             return signalRMessages.AddAsync(new SignalRMessage
             {
-
                 GroupName = tuple.Item2,
                 Target = "inMessage",
                 Arguments = new[] { new MessageItem { User="GAME_EVENT", Message=$"ROUND END | Word was {tuple.Item1}" } }
+            });
+        }
+
+        [FunctionName("GameOrchestrator_EndOfGame")]
+        public static Task EndOfGame([ActivityTrigger] string groupName,
+            [SignalR(HubName = "game")] IAsyncCollector<SignalRMessage> signalRMessages)
+        {
+            return signalRMessages.AddAsync(new SignalRMessage
+            {
+
+                GroupName = groupName,
+                Target = "inMessage",
+                Arguments = new[] { new MessageItem { User = "GAME_EVENT", Message = $"GAME IS FINISHED" } }
 
             });
         }

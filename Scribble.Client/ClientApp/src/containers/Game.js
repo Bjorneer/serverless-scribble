@@ -93,7 +93,7 @@ const Game = props => {
             hubConnection.on('makePainter', (word) => { onMakePainter(word); });
             hubConnection.on('guessCorrect', (name) => { onGuessCorrect(name); });
             hubConnection.on('draw', (drawList) => { onDraw(drawList); });
-            hubConnection.on('sendHeartBeat', () => { sendHeartBeat()})
+            hubConnection.on('sendHeartBeat', () => { sendHeartBeat()});
         }
     }, [hubConnection, state.gamecode, state.playerId])
 
