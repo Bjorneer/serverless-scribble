@@ -82,4 +82,4 @@ Filip Björnåsen - filip@mosquito.se
 [license-url]: https://github.com/Bjorneer/serverless-scribble/blob/master/LICENSE
 [linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=555
 [linkedin-url]: https://www.linkedin.com/in/filip-bj%C3%B6rn%C3%A5sen-b07a7a1b3/
-[architecture]: https://github.com/Bjorneer/serverless-scribble/blob/master/Assets/DrawThatThing.vpd.png?raw=true
+[architecture]: Assets/azure-scribble-architecture.PNG
