@@ -3,7 +3,7 @@
 [![MIT License][license-shield]][license-url]
 [![LinkedIn][linkedin-shield]][linkedin-url]
 
-### [DEMO]([demo-url]) 
+### [DEMO](https://scribblestorage.z16.web.core.windows.net/) 
 (Note: There is proably going to be a cold start of the azure function so the first request to a Azure function may take some time a few seconds)
 
 
@@ -77,4 +77,3 @@ Filip Björnåsen - filip@mosquito.se
 [linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=555
 [linkedin-url]: https://www.linkedin.com/in/filip-bj%C3%B6rn%C3%A5sen-b07a7a1b3/
 [architecture]: Assets/azure-scribble-architecture.PNG
-[demo-url]: https://scribblestorage.z16.web.core.windows.net/
