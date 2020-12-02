@@ -147,6 +147,7 @@ const MainMenu = props => {
         setGameState(null);
         setIsInLobby(false);
         setIsLobbyLeader(false);
+        hubConnection.stop();
         setHubConnection(null);
     };
 
