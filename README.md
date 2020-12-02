@@ -1,9 +1,9 @@
-# Serverless Scribble Hosting With Azure Functions
+## Serverless React.js Scribble Hosted With Azure Using Functions and SignalR
 
 [![MIT License][license-shield]][license-url]
 [![LinkedIn][linkedin-shield]][linkedin-url]
 
-# [DEMO]([demo-url]) 
+### [DEMO]([demo-url]) 
 (Note: There is proably going to be a cold start of the azure function so the first request to a Azure function may take some time a few seconds)
 
 
@@ -30,13 +30,13 @@
 
 
 
-## About The Project
+### About The Project
 
 This project is a real-time serverless multiplayer drawing game where one player receives a word and has to paint it while the other players in the lobby try to guess the word. It is hosted on Azure with the backend part as a Azure Function App written in .Net Core and the frontend hosted as a React.js Static Website in a Storage Account to save on cost. It also uses Azures SignalR service to provide a real-time application for the users.  
 
-### How To Play
+#### How To Play
 
-### Architecture
+#### Architecture
 
 ![alt text][architecture]
 
@@ -51,24 +51,24 @@ The backend part of the system is built solely with Azure functions and their du
 7. The GameOrchestrator restarts itself which creates a new round.
 
 
-### Built With
+#### Built With
 
 * [React](https://reactjs.org/) - Frontend
 * [.Net Core](https://docs.microsoft.com/en-us/dotnet/fundamentals/) - Backend framework
 * [Azure Functions](https://azure.microsoft.com/en-us/services/functions/) - Backend API and game loop
 
-## Setup
+### Setup
 
 1. Clone the repo
    ```sh
    git clone https://github.com/Bjorneer/serverless-scribble.git
    ```
 
-## License
+### License
 
 Distributed under the MIT License. See `LICENSE` for more information.
 
-## Contact
+### Contact
 
 Filip Björnåsen - filip@mosquito.se
 
