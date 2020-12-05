@@ -22,33 +22,8 @@ namespace Scribble.Functions.Functions
         {
             var game = context.GetInput<Game>();
 
-
             string roundWord = await context.CallActivityAsync<string>("GameOrchestrator_RandomWord", null);
             string painterId = null;
-
-            await context.CallActivityAsync("GameOrchestrator_RequestHeartBeat", game.GameCode);
-            var ctstoken = new CancellationTokenSource();
-            var players = new List<Player>();
-            while (true)
-            {
-                var heartBeatEvent = context.WaitForExternalEvent<string>("HeartBeat", TimeSpan.FromSeconds(4), ctstoken.Token);
-                try
-                {
-                    string playerId = await heartBeatEvent;
-                    var player = game.Players.FirstOrDefault(p => p.ID == playerId);
-                    if (player != null)
-                        players.Add(player);
-                }
-                catch
-                {
-                    break;
-                }
-            }
-            game.Players = players;
-            ctstoken.Cancel();
-
-            if (game.Players.Count == 0)
-                return;
 
             if (!game.Players.Any(p => p.ID == game.LastPainterId))
                 game.LastPainterId = null;
@@ -66,7 +41,6 @@ namespace Scribble.Functions.Functions
             };
 
             context.SetCustomStatus(state);
-
 
             await context.CallActivityAsync("GameOrchestrator_StartNewRound", new Tuple<string, string>(game.Players.First(p => p.ID == painterId).UserName, game.GameCode));
 
@@ -165,18 +139,6 @@ namespace Scribble.Functions.Functions
                 Target = "makePainter",
                 Arguments = new[] { tuple.Item1 }
 
-            });
-        }
-
-        [FunctionName("GameOrchestrator_RequestHeartBeat")]
-        public static Task RequestHeartBeat([ActivityTrigger] string gameId,
-            [SignalR(HubName = "game")] IAsyncCollector<SignalRMessage> signalRMessages)
-        {
-            return signalRMessages.AddAsync(new SignalRMessage
-            {
-                GroupName = gameId,
-                Target = "sendHeartBeat",
-                Arguments = new object[0]
             });
         }
 

@@ -36,7 +36,6 @@ namespace Scribble.Functions.Functions
             [HttpTrigger(AuthorizationLevel.Anonymous, "post")] HttpRequest req,
             [SignalR(HubName = "game")] IAsyncCollector<SignalRGroupAction> signalRGroupActions)
         {
-
             return signalRGroupActions.AddAsync(
                 new SignalRGroupAction
                 {

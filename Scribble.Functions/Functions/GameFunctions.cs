@@ -106,31 +106,6 @@ namespace Scribble.Functions.Functions
                 Arguments = new[] { new MessageItem { User = "GAME_EVENT", Message = $"{state.Players.First(p => p.ID == data.PlayerID).UserName} guessed correctly"} }
             });
 
-
-            return new OkResult();
-        }
-
-        [FunctionName("heartbeat")]
-        public static async Task<IActionResult> HeartBeat(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = null)] HttpRequest req,
-            [DurableClient] IDurableOrchestrationClient client)
-        {
-            string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
-            var data = JsonConvert.DeserializeObject<HeartBeatRequest>(requestBody);
-
-            if (data.GameCode == null || data.PlayerID == null)
-                return new BadRequestResult();
-
-            var status = await client.GetStatusAsync("g" + data.GameCode);
-
-            if (status == null)
-                return new NotFoundResult();
-
-            if (status.RuntimeStatus != OrchestrationRuntimeStatus.Running)
-                return new BadRequestResult();
-
-            await client.RaiseEventAsync("g" + data.GameCode, "HeartBeat", data.PlayerID);
-
             return new OkResult();
         }
     }
