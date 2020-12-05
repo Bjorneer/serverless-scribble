@@ -16,9 +16,13 @@ const Guesser = props => {
         setInput(e.target.value);
     };
 
+    const onBlur = () => {
+        window.scrollTo(0,0);
+    };
+
     return (
         <div className={classes.Guesser}>
-            <input onKeyUp={onKeyUp} value={input} onChange={(e) => handleChange(e)} disabled={props.disabled} placeholder='Enter Guess'/>
+            <input onKeyUp={onKeyUp} value={input} onChange={(e) => handleChange(e)} disabled={props.disabled} placeholder='Enter Guess' onBlur={onBlur}/>
         </div>
     )
 };
