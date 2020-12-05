@@ -19,10 +19,7 @@
         <li><a href="#built-with">Built With</a></li>
       </ul>
     </li>
-    <li>
-      <a href="#setup">Setup</a>
-    </li>
-    <li><a href="#contributing">Contributing</a></li>
+    <li><a href="#setup-on-azure">Setup on Azure</a></li>
     <li><a href="#license">License</a></li>
     <li><a href="#contact">Contact</a></li>
   </ol>
@@ -57,12 +54,27 @@ The backend part of the system is built solely with Azure functions and their du
 * [.Net Core](https://docs.microsoft.com/en-us/dotnet/fundamentals/) - Backend framework
 * [Azure Functions](https://azure.microsoft.com/en-us/services/functions/) - Backend API and game loop
 
-### Setup
+### Setup on Azure
 
 1. Clone the repo
    ```sh
    git clone https://github.com/Bjorneer/serverless-scribble.git
    ```
+2. Create Azure resources either through portal or cli (Resource Group, SignalR, Storage Account, Function App)
+  ```sh
+  az group create -n <RGNAME> -l <LOCATION>
+  az signalr create --name <SIGNALRNAME> --resource-group <RGNAME> --sku Free --unit-count 1
+  az storage account create -n <SANAME> -g <RGNAME> -l <LOCATION> --sku Standard_LRS
+  az functionapp create --resource-group <RGNAME> --consumption-plan-location <LOCATION> --runtime dotnet --functions-version 3 --name <APPNAME> --storage-account <SANAME>
+  ```
+3. Setup frontend: 
+    * Search and replace FUNCTIONAPP_URL with your newly created Funtion App api endppoint.
+    * Navigate to /Scribble.Client/ClientApp the project navigate and run ```npm install``` and ```npm run build```
+    * Go to your Azure Storage Account and enable Static Website aswell as set index and error document as index.html [Docs](https://docs.microsoft.com/en-us/azure/storage/blobs/storage-blob-static-website)
+    * Move the content of the created build folder to the $web container
+4. Setup backend:
+    * Easiest way to setup your Function App is through Visual Studios [Docs](https://docs.microsoft.com/sv-se/azure/azure-functions/functions-develop-vs#publish-to-azure)
+    * Add The AzureSignalRConnectionString to App Settings during publish or in portal
 
 ### License
 
