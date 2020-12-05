@@ -16,7 +16,8 @@ const Layout = () => {
   const onExitGame = useCallback(() => {
       history.push('/');
       setGameState(null);
-      hubConnection.stop();
+      if(hubConnection)
+        hubConnection.stop();
       setHubConnection(null); // maybe close connection first if exists
     },
     [history]
