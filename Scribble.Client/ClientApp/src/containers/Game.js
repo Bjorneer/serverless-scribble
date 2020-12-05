@@ -82,18 +82,12 @@ const Game = props => {
     }, [startDate, state.user]);
 
     useEffect(() => {
-
-        const sendHeartBeat = async () => {
-            await ApiFactory.sendHeartBeat({token: state.playerId, gamecode: state.gamecode});
-        }
-
         if(hubConnection !== null){
             hubConnection.off();
             hubConnection.on('newRound', (painterName) => { onNewRound(painterName); });
             hubConnection.on('makePainter', (word) => { onMakePainter(word); });
             hubConnection.on('guessCorrect', (name) => { onGuessCorrect(name); });
             hubConnection.on('draw', (drawList) => { onDraw(drawList); });
-            hubConnection.on('sendHeartBeat', () => { sendHeartBeat()});
         }
     }, [hubConnection, state.gamecode, state.playerId])
 

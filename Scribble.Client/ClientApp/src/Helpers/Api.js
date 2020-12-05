@@ -9,8 +9,7 @@ export const APIUrls = {
     joinGroup: '/joinGroup',
     leaveGroup: '/leaveGroup',
     negotiate: '/negotiate',
-    start: '/start',
-    sendHeartBeat: '/heartbeat'
+    start: '/start'
 };
 
 const postRequest = (url, data, options) => {
@@ -46,8 +45,5 @@ export const ApiFactory = {
     },
     negotiate: (data, options) => {
         return postRequest(APIUrls.negotiate, data, options)
-    },
-    sendHeartBeat: (data) => {
-        return postRequest(APIUrls.sendHeartBeat, data);
     }
 };

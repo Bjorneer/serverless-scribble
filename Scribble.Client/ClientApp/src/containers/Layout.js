@@ -14,10 +14,10 @@ const Layout = () => {
   const history = useHistory();
 
   const onExitGame = useCallback(() => {
+      history.push('/');
       setGameState(null);
       hubConnection.stop();
       setHubConnection(null); // maybe close connection first if exists
-      history.push('/');
     },
     [history]
   )
