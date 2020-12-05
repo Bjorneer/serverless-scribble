@@ -50,8 +50,10 @@ namespace Scribble.Functions.Functions
             var timerTask = context.CreateTimer(context.CurrentUtcDateTime.Add(TimeSpan.FromSeconds(game.SecondsPerRound)), cts.Token);
 
             int correct = 0;
+            if (game.Players.Count == 1)
+                correct = -1;
 
-            while (correct != game.Players.Count - 1 && game.Players.Count != 1)
+            while (correct != game.Players.Count - 1)
             {
                 var correctGuessTask = context.WaitForExternalEvent<string>("CorrectGuess");
 
