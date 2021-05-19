@@ -6,6 +6,10 @@
 ### [DEMO](https://scribblestorage.z16.web.core.windows.net/) 
 (Note: There is proably going to be a cold start of the azure function so the first request to a Azure function may take some time a few seconds)
 
+<p align="center" float="left">
+  <img width="480" height="300" src="Assets/user-guesser.gif">
+  <img width="480" height="300" src="Assets/user-painter.gif">
+</p>
 
 
 <details open="open">
